@@ -9,14 +9,15 @@
 */
 
 
-#include "stm32f3xx.h"
-#include "stm32f3xx_nucleo_32.h"
+#include "ADC/Adc_init.h"
+#include "UART/Uart_init.h"
+#include "PWM/Pwm_init.h"
 
 #include "ADC/Adc_driver.h"
-#include "ADC/ADC_init.h"
-
-#include "UART/UART_init.h"
 #include "UART/Uart_driver.h"
+#include "PWM/Pwm_driver.h"
+
+#include "Error_handler/Error_handler.h"
 
 void SystemClock_Config(void)
 {
@@ -29,10 +30,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL16;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct)!= HAL_OK)
-  {
-    /* Initialization Error */
-    while(1);
-  }
+	  Error_Handler();
 
   /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2
      clocks dividers */
@@ -42,10 +40,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2)!= HAL_OK)
-  {
-    /* Initialization Error */
-    while(1);
-  }
+	  Error_Handler();
 }
 
 int main()
@@ -60,27 +55,32 @@ int main()
 
 	UART_HandleTypeDef uart;
 
+	pwm_t motorMain;
+	pwm_t motorTail;
+
 	POT1_init(&handler_pot1);
 	POT2_init(&handler_pot2);
 	AIN2_init(&handler_ain2);
 	AIN1_init(&handler_ain1);
 
+	USB_UART_init(&uart);
 
-	UART_init(&uart, 115200);
+	MainMotorPWM_init(&motorMain);
+	TailMotorPWM_init(&motorTail);
 
-	UART_printf(uart,"hello word\n\r");
+	DRV_UART_printf(uart,"hello word\n\r");
 
 	while(1)
 	{
 		uint32_t value;
-		value = ADC_get_value(&handler_pot1);
-		UART_printf(uart,"pot1 : %d ", value);
-		value = ADC_get_value(&handler_pot2);
-		UART_printf(uart,"pot2 : %d ", value);
-		value = ADC_get_value(&handler_ain1);
-		UART_printf(uart,"ain1 : %d ", value);
-		value = ADC_get_value(&handler_ain2);
-		UART_printf(uart,"ain2 : %d\n\r", value);
+		value = DRV_ADC_getValue(&handler_pot1);
+		DRV_UART_printf(uart,"pot1 : %d ", value);
+		value = DRV_ADC_getValue(&handler_pot2);
+		DRV_UART_printf(uart,"pot2 : %d ", value);
+		value = DRV_ADC_getValue(&handler_ain1);
+		DRV_UART_printf(uart,"ain1 : %d ", value);
+		value = DRV_ADC_getValue(&handler_ain2);
+		DRV_UART_printf(uart,"ain2 : %d\n\r", value);
 	}
 
 	return 0;

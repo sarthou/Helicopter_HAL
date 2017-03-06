@@ -1,20 +1,21 @@
 #ifndef UART_DRIVER_H
 #define UART_DRIVER_H
 
+#include "stm32f3xx_hal.h"
+
 #ifdef __cplusplus
 extern "C"{
 #endif
 
-#include "stm32f3xx.h"
-#include "stm32f3xx_nucleo_32.h"
+void DRV_UART_init(UART_HandleTypeDef* UartHandle, USART_TypeDef* instance, uint32_t baudrate);
 
-void UART_putchar(UART_HandleTypeDef UartHandle, uint8_t str);
-void UART_transmit(UART_HandleTypeDef UartHandle, uint8_t str[]);
-uint8_t UART_getchar(UART_HandleTypeDef UartHandle);
-void UART_receive(UART_HandleTypeDef UartHandle, uint8_t str[]);
+void DRV_UART_putchar(UART_HandleTypeDef UartHandle, uint8_t str);
+void DRV_UART_transmit(UART_HandleTypeDef UartHandle, uint8_t str[]);
+uint8_t DRV_UART_getchar(UART_HandleTypeDef UartHandle);
+void DRV_UART_receive(UART_HandleTypeDef UartHandle, uint8_t str[]);
 
-int UART_printf(UART_HandleTypeDef UartHandle, const char *format, ...);
-int UART_sprintf(UART_HandleTypeDef UartHandle, char *out, const char *format, ...);
+int DRV_UART_printf(UART_HandleTypeDef UartHandle, const char *format, ...);
+int DRV_UART_sprintf(UART_HandleTypeDef UartHandle, char *out, const char *format, ...);
 
 /*
 	UART_init(&uart);

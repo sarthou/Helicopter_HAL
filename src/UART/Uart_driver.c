@@ -1,22 +1,43 @@
 #include "Uart_driver.h"
+#include "Error_handler/Error_handler.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 
-void UART_putchar(UART_HandleTypeDef UartHandle, uint8_t str)
+void DRV_UART_init(UART_HandleTypeDef* UartHandle, USART_TypeDef* instance, uint32_t baudrate)
+{
+	UartHandle->Instance          = instance;
+
+	UartHandle->Init.BaudRate     = baudrate;
+	UartHandle->Init.WordLength   = UART_WORDLENGTH_8B;
+	UartHandle->Init.StopBits     = UART_STOPBITS_1;
+	UartHandle->Init.Parity       = UART_PARITY_NONE;
+	UartHandle->Init.HwFlowCtl    = UART_HWCONTROL_NONE;
+	UartHandle->Init.Mode         = UART_MODE_TX_RX;
+	UartHandle->Init.OverSampling = UART_OVERSAMPLING_16;
+	UartHandle->AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+
+	if(HAL_UART_DeInit(UartHandle) != HAL_OK)
+		Error_Handler();
+
+	if(HAL_UART_Init(UartHandle) != HAL_OK)
+		Error_Handler();
+}
+
+void DRV_UART_putchar(UART_HandleTypeDef UartHandle, uint8_t str)
 {
 	while(HAL_UART_GetState(&UartHandle) != HAL_UART_STATE_READY);
 	HAL_UART_Transmit(&UartHandle, &str, 1, 0xFFFF);
 }
 
-void UART_transmit(UART_HandleTypeDef UartHandle, uint8_t str[])
+void DRV_UART_transmit(UART_HandleTypeDef UartHandle, uint8_t str[])
 {
 	while(HAL_UART_GetState(&UartHandle) != HAL_UART_STATE_READY);
 	HAL_UART_Transmit(&UartHandle, str, (strlen((char*)str) + 1 ) * sizeof(char), 0xFFFF);
 }
 
-uint8_t UART_getchar(UART_HandleTypeDef UartHandle)
+uint8_t DRV_UART_getchar(UART_HandleTypeDef UartHandle)
 {
 	uint8_t car = 0x00;
 	if(__HAL_UART_GET_FLAG(&UartHandle, UART_FLAG_RXNE) != RESET)
@@ -25,7 +46,7 @@ uint8_t UART_getchar(UART_HandleTypeDef UartHandle)
 	return car;
 }
 
-void UART_receive(UART_HandleTypeDef UartHandle, uint8_t str[])
+void DRV_UART_receive(UART_HandleTypeDef UartHandle, uint8_t str[])
 {
 	if(__HAL_UART_GET_FLAG(&UartHandle, UART_FLAG_RXNE) != RESET)
 	HAL_UART_Receive(&UartHandle, str, 1, 0xFFFF);
@@ -39,7 +60,7 @@ static void printchar(UART_HandleTypeDef UartHandle, char **str, int c)
 		**str = c;
 		++(*str);
 	}
-	else (void)UART_putchar(UartHandle, c);
+	else (void)DRV_UART_putchar(UartHandle, c);
 }
 
 #define PAD_RIGHT 1
@@ -185,7 +206,7 @@ static int print(UART_HandleTypeDef UartHandle, char **out, const char *format, 
 	return pc;
 }
 
-int UART_printf(UART_HandleTypeDef UartHandle, const char *format, ...)
+int DRV_UART_printf(UART_HandleTypeDef UartHandle, const char *format, ...)
 {
         va_list args;
 
@@ -193,7 +214,7 @@ int UART_printf(UART_HandleTypeDef UartHandle, const char *format, ...)
         return print(UartHandle, 0, format, args );
 }
 
-int UART_sprintf(UART_HandleTypeDef UartHandle, char *out, const char *format, ...)
+int DRV_UART_sprintf(UART_HandleTypeDef UartHandle, char *out, const char *format, ...)
 {
         va_list args;
 

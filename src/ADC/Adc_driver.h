@@ -1,15 +1,15 @@
 #ifndef ADC_H
 #define ADC_H
 
+#include "stm32f3xx_hal.h"
+
 #ifdef __cplusplus
 extern "C"{
 #endif
 
-#include "stm32f3xx.h"
-#include "stm32f3xx_nucleo_32.h"
+void DRV_ADC_init(ADC_HandleTypeDef* AdcHandle, ADC_TypeDef* instance, uint32_t channel);
 
-uint32_t ADC_get_value(ADC_HandleTypeDef* AdcHandle);
-
+uint32_t DRV_ADC_getValue(ADC_HandleTypeDef* AdcHandle);
 
 #ifdef __cplusplus
 }

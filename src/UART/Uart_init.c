@@ -1,4 +1,5 @@
-#include "UART_init.h"
+#include "Uart_init.h"
+#include "Uart_driver.h"
 
 /*COMMON*/
 #define USART_NO                         USART2 //BLE UART1
@@ -35,22 +36,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 	HAL_GPIO_Init(USARTx_RX_GPIO_PORT, &GPIO_InitStruct);
 }
 
-void UART_init(UART_HandleTypeDef* UartHandle, uint32_t baudrate)
+void USB_UART_init(UART_HandleTypeDef* UartHandle)
 {
-	UartHandle->Instance        = USART_NO;
-
-	UartHandle->Init.BaudRate     = baudrate;
-	UartHandle->Init.WordLength   = UART_WORDLENGTH_8B;
-	UartHandle->Init.StopBits     = UART_STOPBITS_1;
-	UartHandle->Init.Parity       = UART_PARITY_NONE;
-	UartHandle->Init.HwFlowCtl    = UART_HWCONTROL_NONE;
-	UartHandle->Init.Mode         = UART_MODE_TX_RX;
-	UartHandle->Init.OverSampling = UART_OVERSAMPLING_16;
-	UartHandle->AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
-
-	if(HAL_UART_DeInit(UartHandle) != HAL_OK)
-		while(1);//Error_Handler();
-
-	if(HAL_UART_Init(UartHandle) != HAL_OK)
-		while(1);//Error_Handler();
+	DRV_UART_init(UartHandle, USART_NO, 115200);
 }
