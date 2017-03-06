@@ -10,7 +10,7 @@ extern "C"{
 
 void HAL_UART_MspInit(UART_HandleTypeDef *huart);
 
-void UART_init(UART_HandleTypeDef* UartHandle);
+void UART_init(UART_HandleTypeDef* UartHandle, uint32_t baudrate);
 
 
 #ifdef __cplusplus

@@ -66,7 +66,7 @@ int main()
 	AIN1_init(&handler_ain1);
 
 
-	UART_init(&uart);
+	UART_init(&uart, 115200);
 
 	UART_printf(uart,"hello word\n\r");
 

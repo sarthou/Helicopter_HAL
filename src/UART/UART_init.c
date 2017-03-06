@@ -35,11 +35,11 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
 	HAL_GPIO_Init(USARTx_RX_GPIO_PORT, &GPIO_InitStruct);
 }
 
-void UART_init(UART_HandleTypeDef* UartHandle)
+void UART_init(UART_HandleTypeDef* UartHandle, uint32_t baudrate)
 {
 	UartHandle->Instance        = USART_NO;
 
-	UartHandle->Init.BaudRate     = 9600;
+	UartHandle->Init.BaudRate     = baudrate;
 	UartHandle->Init.WordLength   = UART_WORDLENGTH_8B;
 	UartHandle->Init.StopBits     = UART_STOPBITS_1;
 	UartHandle->Init.Parity       = UART_PARITY_NONE;
