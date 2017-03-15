@@ -19,6 +19,8 @@
 
 #include "Error_handler/Error_handler.h"
 
+#include "Helicopter/Helicopter.h"
+
 void SystemClock_Config(void)
 {
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
@@ -43,7 +45,7 @@ void SystemClock_Config(void)
 	  Error_Handler();
 }
 
-int main()
+/*int main()
 {
 	HAL_Init();
 	SystemClock_Config();
@@ -68,6 +70,12 @@ int main()
 	MainMotorPWM_init(&motorMain);
 	TailMotorPWM_init(&motorTail);
 
+	DRV_PWM_setPeriod(&motorMain, 10);
+	DRV_PWM_setDutyCycle(&motorMain, 0.2);
+
+	DRV_PWM_setPeriod(&motorTail, 1);
+	DRV_PWM_setDutyCycle(&motorTail, 0.5);
+
 	DRV_UART_printf(uart,"hello word\n\r");
 
 	while(1)
@@ -82,6 +90,17 @@ int main()
 		value = DRV_ADC_getValue(&handler_ain2);
 		DRV_UART_printf(uart,"ain2 : %d\n\r", value);
 	}
+
+	return 0;
+}*/
+
+int main(void)
+{
+	HAL_Init();
+	SystemClock_Config();
+
+	Helicopter helico;
+	helico.run();
 
 	return 0;
 }
