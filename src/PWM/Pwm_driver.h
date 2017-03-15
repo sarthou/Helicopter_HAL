@@ -21,6 +21,7 @@ typedef struct pwm_s
 	TIM_HandleTypeDef htim;
 	uint32_t channel;
 	uint32_t period_tick;
+	float dutyCycle;
 
 } pwm_t;
 

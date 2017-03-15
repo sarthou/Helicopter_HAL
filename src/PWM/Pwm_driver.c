@@ -13,9 +13,13 @@ void DRV_PWM_init(pwm_t* pwm, TIM_TypeDef* tim, uint32_t channel)
 	pwm->htim.Instance = tim;
 	pwm->channel = channel;
 	pwm->period_tick = 0;
+	pwm->dutyCycle = 0;
 
 	if(HAL_TIM_PWM_DeInit(&pwm->htim) != HAL_OK)
 		Error_Handler();
+
+	DRV_PWM_setPeriod(pwm, 0);
+	DRV_PWM_setDutyCycle(pwm, 0);
 }
 
 void DRV_PWM_setPeriod(pwm_t* pwm, uint32_t period_us)
@@ -53,6 +57,8 @@ void DRV_PWM_setDutyCycle(pwm_t* pwm, float dutyCycle)
 
 	if(HAL_TIM_PWM_Start(&pwm->htim, pwm->channel) != HAL_OK)
 		Error_Handler();
+
+	pwm->dutyCycle = dutyCycle;
 }
 
 
