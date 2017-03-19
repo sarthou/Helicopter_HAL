@@ -12,10 +12,12 @@
 #include "ADC/Adc_init.h"
 #include "UART/Uart_init.h"
 #include "PWM/Pwm_init.h"
+#include "I2C/I2c_init.h"
 
 #include "ADC/Adc_driver.h"
 #include "UART/Uart_driver.h"
 #include "PWM/Pwm_driver.h"
+#include "I2C/I2c_driver.h"
 
 #include "Error_handler/Error_handler.h"
 
@@ -58,11 +60,6 @@ int main()
 	pwm_t motorMain;
 	pwm_t motorTail;
 
-	POT1_init(&handler_pot1);
-	POT2_init(&handler_pot2);
-	AIN2_init(&handler_ain2);
-	AIN1_init(&handler_ain1);
-
 	USB_UART_init(&uart);
 
 	MainMotorPWM_init(&motorMain);
@@ -73,12 +70,19 @@ int main()
 	while(1)
 	{
 		uint32_t value;
+		POT1_init(&handler_pot1);
 		value = DRV_ADC_getValue(&handler_pot1);
 		DRV_UART_printf(uart,"pot1 : %d ", value);
+
+		POT2_init(&handler_pot2);
 		value = DRV_ADC_getValue(&handler_pot2);
 		DRV_UART_printf(uart,"pot2 : %d ", value);
+
+		AIN1_init(&handler_ain1);
 		value = DRV_ADC_getValue(&handler_ain1);
 		DRV_UART_printf(uart,"ain1 : %d ", value);
+
+		AIN2_init(&handler_ain2);
 		value = DRV_ADC_getValue(&handler_ain2);
 		DRV_UART_printf(uart,"ain2 : %d\n\r", value);
 	}
