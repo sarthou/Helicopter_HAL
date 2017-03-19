@@ -9,13 +9,13 @@ extern "C"{
 
 void DRV_UART_init(UART_HandleTypeDef* UartHandle, USART_TypeDef* instance, uint32_t baudrate);
 
-void DRV_UART_putchar(UART_HandleTypeDef UartHandle, uint8_t str);
-void DRV_UART_transmit(UART_HandleTypeDef UartHandle, uint8_t str[]);
-uint8_t DRV_UART_getchar(UART_HandleTypeDef UartHandle);
-void DRV_UART_receive(UART_HandleTypeDef UartHandle, uint8_t str[]);
+void DRV_UART_putchar(UART_HandleTypeDef* UartHandle, uint8_t str);
+void DRV_UART_transmit(UART_HandleTypeDef* UartHandle, uint8_t str[]);
+uint8_t DRV_UART_getchar(UART_HandleTypeDef* UartHandle);
+void DRV_UART_receive(UART_HandleTypeDef* UartHandle, uint8_t str[]);
 
-int DRV_UART_printf(UART_HandleTypeDef UartHandle, const char *format, ...);
-int DRV_UART_sprintf(UART_HandleTypeDef UartHandle, char *out, const char *format, ...);
+int DRV_UART_printf(UART_HandleTypeDef* UartHandle, const char *format, ...);
+int DRV_UART_sprintf(UART_HandleTypeDef* UartHandle, char *out, const char *format, ...);
 
 /*
 	UART_init(&uart);

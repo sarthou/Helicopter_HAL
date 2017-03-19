@@ -25,34 +25,34 @@ void DRV_UART_init(UART_HandleTypeDef* UartHandle, USART_TypeDef* instance, uint
 		Error_Handler();
 }
 
-void DRV_UART_putchar(UART_HandleTypeDef UartHandle, uint8_t str)
+void DRV_UART_putchar(UART_HandleTypeDef* UartHandle, uint8_t str)
 {
-	while(HAL_UART_GetState(&UartHandle) != HAL_UART_STATE_READY);
-	HAL_UART_Transmit(&UartHandle, &str, 1, 0xFFFF);
+	while(HAL_UART_GetState(UartHandle) != HAL_UART_STATE_READY);
+	HAL_UART_Transmit(UartHandle, &str, 1, 0xFFFF);
 }
 
-void DRV_UART_transmit(UART_HandleTypeDef UartHandle, uint8_t str[])
+void DRV_UART_transmit(UART_HandleTypeDef* UartHandle, uint8_t str[])
 {
-	while(HAL_UART_GetState(&UartHandle) != HAL_UART_STATE_READY);
-	HAL_UART_Transmit(&UartHandle, str, (strlen((char*)str) + 1 ) * sizeof(char), 0xFFFF);
+	while(HAL_UART_GetState(UartHandle) != HAL_UART_STATE_READY);
+	HAL_UART_Transmit(UartHandle, str, (strlen((char*)str) + 1 ) * sizeof(char), 0xFFFF);
 }
 
-uint8_t DRV_UART_getchar(UART_HandleTypeDef UartHandle)
+uint8_t DRV_UART_getchar(UART_HandleTypeDef* UartHandle)
 {
 	uint8_t car = 0x00;
-	if(__HAL_UART_GET_FLAG(&UartHandle, UART_FLAG_RXNE) != RESET)
-		HAL_UART_Receive(&UartHandle, &car, 1, 0xFFFF);
+	if(__HAL_UART_GET_FLAG(UartHandle, UART_FLAG_RXNE) != RESET)
+		HAL_UART_Receive(UartHandle, &car, 1, 0xFFFF);
 
 	return car;
 }
 
-void DRV_UART_receive(UART_HandleTypeDef UartHandle, uint8_t str[])
+void DRV_UART_receive(UART_HandleTypeDef* UartHandle, uint8_t str[])
 {
-	if(__HAL_UART_GET_FLAG(&UartHandle, UART_FLAG_RXNE) != RESET)
-	HAL_UART_Receive(&UartHandle, str, 1, 0xFFFF);
+	if(__HAL_UART_GET_FLAG(UartHandle, UART_FLAG_RXNE) != RESET)
+	HAL_UART_Receive(UartHandle, str, 1, 0xFFFF);
 }
 
-static void printchar(UART_HandleTypeDef UartHandle, char **str, int c)
+static void printchar(UART_HandleTypeDef* UartHandle, char **str, int c)
 {
 	//extern int putchar(int c);
 
@@ -66,7 +66,7 @@ static void printchar(UART_HandleTypeDef UartHandle, char **str, int c)
 #define PAD_RIGHT 1
 #define PAD_ZERO 2
 
-static int prints(UART_HandleTypeDef UartHandle, char **out, const char *string, int width, int pad)
+static int prints(UART_HandleTypeDef* UartHandle, char **out, const char *string, int width, int pad)
 {
 	register int pc = 0, padchar = ' ';
 
@@ -99,7 +99,7 @@ static int prints(UART_HandleTypeDef UartHandle, char **out, const char *string,
 /* the following should be enough for 32 bit int */
 #define PRINT_BUF_LEN 12
 
-static int printi(UART_HandleTypeDef UartHandle, char **out, int i, int b, int sg, int width, int pad, int letbase)
+static int printi(UART_HandleTypeDef* UartHandle, char **out, int i, int b, int sg, int width, int pad, int letbase)
 {
 	char print_buf[PRINT_BUF_LEN];
 	register char *s;
@@ -142,7 +142,7 @@ static int printi(UART_HandleTypeDef UartHandle, char **out, int i, int b, int s
 	return pc + prints (UartHandle, out, s, width, pad);
 }
 
-static int print(UART_HandleTypeDef UartHandle, char **out, const char *format, va_list args )
+static int print(UART_HandleTypeDef* UartHandle, char **out, const char *format, va_list args )
 {
 	register int width, pad;
 	register int pc = 0;
@@ -206,7 +206,7 @@ static int print(UART_HandleTypeDef UartHandle, char **out, const char *format, 
 	return pc;
 }
 
-int DRV_UART_printf(UART_HandleTypeDef UartHandle, const char *format, ...)
+int DRV_UART_printf(UART_HandleTypeDef* UartHandle, const char *format, ...)
 {
         va_list args;
 
@@ -214,7 +214,7 @@ int DRV_UART_printf(UART_HandleTypeDef UartHandle, const char *format, ...)
         return print(UartHandle, 0, format, args );
 }
 
-int DRV_UART_sprintf(UART_HandleTypeDef UartHandle, char *out, const char *format, ...)
+int DRV_UART_sprintf(UART_HandleTypeDef* UartHandle, char *out, const char *format, ...)
 {
         va_list args;
 
