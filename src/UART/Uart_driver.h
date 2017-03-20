@@ -11,6 +11,8 @@ void DRV_UART_init(UART_HandleTypeDef* UartHandle, USART_TypeDef* instance, uint
 
 void DRV_UART_putchar(UART_HandleTypeDef* UartHandle, uint8_t str);
 void DRV_UART_transmit(UART_HandleTypeDef* UartHandle, uint8_t str[]);
+
+uint8_t DRV_UART_readable(UART_HandleTypeDef* UartHandle);
 uint8_t DRV_UART_getchar(UART_HandleTypeDef* UartHandle);
 void DRV_UART_receive(UART_HandleTypeDef* UartHandle, uint8_t str[]);
 

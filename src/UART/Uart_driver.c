@@ -37,6 +37,14 @@ void DRV_UART_transmit(UART_HandleTypeDef* UartHandle, uint8_t str[])
 	HAL_UART_Transmit(UartHandle, str, (strlen((char*)str) + 1 ) * sizeof(char), 0xFFFF);
 }
 
+uint8_t DRV_UART_readable(UART_HandleTypeDef* UartHandle)
+{
+	if(__HAL_UART_GET_FLAG(UartHandle, UART_FLAG_RXNE) != RESET)
+		return 1;
+	else
+		return 0;
+}
+
 uint8_t DRV_UART_getchar(UART_HandleTypeDef* UartHandle)
 {
 	uint8_t car = 0x00;
@@ -49,7 +57,7 @@ uint8_t DRV_UART_getchar(UART_HandleTypeDef* UartHandle)
 void DRV_UART_receive(UART_HandleTypeDef* UartHandle, uint8_t str[])
 {
 	if(__HAL_UART_GET_FLAG(UartHandle, UART_FLAG_RXNE) != RESET)
-	HAL_UART_Receive(UartHandle, str, 1, 0xFFFF);
+		HAL_UART_Receive(UartHandle, str, 1, 0xFFFF);
 }
 
 static void printchar(UART_HandleTypeDef* UartHandle, char **str, int c)
