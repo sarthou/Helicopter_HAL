@@ -12,6 +12,8 @@
 #include "Waveform.h"
 
 #include "PWM/Pwm_driver.h"
+#include "I2C/I2c_driver.h"
+#include "I2C/I2c_init.h"
 
 class Helicopter
 {
@@ -55,7 +57,7 @@ private:
 	AnalogIn m_adc2;
 	AnalogOut m_dac1;
 	AnalogOut m_dac2;*/
-	//I2C m_i2c;
+	I2C_HandleTypeDef m_i2c;
 	//RawSerial m_remotePC;
 	UART_HandleTypeDef m_remotePC;
 	/* TODO:

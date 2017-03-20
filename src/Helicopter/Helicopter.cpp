@@ -15,9 +15,7 @@
 Helicopter::Helicopter() :
 	//m_motorMain(PIN_MOT_1), m_motorTail(PIN_MOT_2),
 	//m_adc1(PIN_ADC_1), m_adc2(PIN_ADC_2),
-	//m_dac1(PIN_DAC_1), m_dac2(PIN_DAC_2),
-	//m_i2c(PIN_SDA,PIN_SCL)
-	//m_remotePC(PA_9, PA_10, 115200),
+	//m_dac1(PIN_DAC_1), m_dac2(PIN_DAC_2)
 	m_Te(0), m_Tsim(0), m_currentTime(0),
 	m_waveformMain(NULL),
 	m_waveformTail(NULL),
@@ -28,6 +26,7 @@ Helicopter::Helicopter() :
 
 	SysTick_setInstance(this);
 
+	MPU9250_I2C_init(&m_i2c);
 	USB_UART_init(&m_remotePC);
 	DRV_UART_transmit(&m_remotePC, (uint8_t*)"hello \r\n");
 }
