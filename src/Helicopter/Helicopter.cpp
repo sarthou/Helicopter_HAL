@@ -9,6 +9,7 @@
 #include "CommunicationProtocol.h"
 #include "UART/Uart_init.h"
 #include "UART/Uart_driver.h"
+#include "StringUtility.h"
 
 #include "SysTick/SysTick.h"
 
@@ -32,16 +33,23 @@ Helicopter::Helicopter() :
 }
 
 static int i = 0;
+static int u = 0;
 
 void Helicopter::run()
 {
+	uint32_t freq = HAL_RCC_GetHCLKFreq();
+	HAL_SYSTICK_Config((uint32_t)(freq * 1000.f / 1000000.f));
 	DRV_UART_transmit(&m_remotePC, (uint8_t*)"run \r\n");
 	while(1)
 	{
 		if(i == 1000)
 		{
+			u += i;
 			i = 0;
-			DRV_UART_transmit(&m_remotePC, (uint8_t*)"a");
+			char uc[10];
+			itoa(u, uc, 10);
+			DRV_UART_transmit(&m_remotePC, (uint8_t*)uc);
+			DRV_UART_transmit(&m_remotePC, (uint8_t*)"\r\n");
 		}
 		/*if(m_remotePC.readable())
 		{
@@ -224,6 +232,16 @@ void Helicopter::handleSignalRotorTailFrame()
 			m_waveformTail = new RampWaveform(Tstart, slope);
 			break;
 		}
+	}
+}
+
+void Helicopter::handleStartFrame()
+{
+	if(not m_isRunning)
+	{
+		m_isRunning = true;
+		HAL_SYSTICK_Config((uint32_t)(HAL_RCC_GetHCLKFreq() * m_Te / 1000000.f));
+		//m_ticker.attach_us(callback(this, &Helicopter::process), m_Te);
 	}
 }
 
