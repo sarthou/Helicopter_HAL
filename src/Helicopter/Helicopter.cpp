@@ -13,6 +13,9 @@
 
 #include "SysTick/SysTick.h"
 
+#include "SD/sd_diskio.h"
+#include "Error_handler/Error_handler.h"
+
 Helicopter::Helicopter() :
 	//m_motorMain(PIN_MOT_1), m_motorTail(PIN_MOT_2),
 	//m_adc1(PIN_ADC_1), m_adc2(PIN_ADC_2),
@@ -30,6 +33,22 @@ Helicopter::Helicopter() :
 	MPU9250_I2C_init(&m_i2c);
 	USB_UART_init(&m_remotePC);
 	DRV_UART_transmit(&m_remotePC, (uint8_t*)"hello \r\n");
+
+	UINT byteswritten;
+
+	if(FATFS_LinkDriver(&SD_Driver, m_SDPath) != 0)
+		Error_Handler();
+	if(f_mount(&m_SDFatFs, (TCHAR const*)m_SDPath, 0) != FR_OK)
+		Error_Handler();
+
+	if(f_open(&m_file, "STM32.TXT", FA_OPEN_ALWAYS | FA_WRITE) != FR_OK)
+		Error_Handler();
+
+	char text[] = "hello !";
+	f_write(&m_file, text, sizeof(text), &byteswritten);
+
+	if (f_close(&m_file) != FR_OK )
+		Error_Handler();
 }
 
 static int i = 0;

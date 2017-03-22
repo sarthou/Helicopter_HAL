@@ -22,17 +22,23 @@
 							<option id="fr.ac6.managedbuild.option.gnu.cross.floatabi.1978975224" name="Floating-point ABI" superClass="fr.ac6.managedbuild.option.gnu.cross.floatabi" value="fr.ac6.managedbuild.option.gnu.cross.floatabi.hard" valueType="enumerated"/>
 							<option id="fr.ac6.managedbuild.option.gnu.cross.fpu.1875335472" name="Floating point hardware" superClass="fr.ac6.managedbuild.option.gnu.cross.fpu" value="fr.ac6.managedbuild.option.gnu.cross.fpu.no" valueType="enumerated"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="fr.ac6.managedbuild.targetPlatform.gnu.cross.1570330787" isAbstract="false" osList="all" superClass="fr.ac6.managedbuild.targetPlatform.gnu.cross"/>
-							<builder buildPath="${workspace_loc:/HAL}/Debug" id="fr.ac6.managedbuild.builder.gnu.cross.57619898" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="fr.ac6.managedbuild.builder.gnu.cross"/>
+							<builder buildPath="${workspace_loc:/HAL}/Debug" id="fr.ac6.managedbuild.builder.gnu.cross.57619898" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="Gnu Make Builder" superClass="fr.ac6.managedbuild.builder.gnu.cross">
+								<outputEntries>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="Debug"/>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="Release"/>
+								</outputEntries>
+							</builder>
 							<tool id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.483497975" name="MCU GCC Compiler" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler">
 								<option id="fr.ac6.managedbuild.gnu.c.compiler.option.optimization.level.32614651" name="Optimization Level" superClass="fr.ac6.managedbuild.gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" value="fr.ac6.managedbuild.gnu.c.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.level.1301383697" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.264804890" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/FatFs&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/CMSIS/core&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/CMSIS/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/HAL_Driver/Inc/Legacy&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/HAL_Driver/Inc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/HAL_Driver/Inc/Legacy&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Utilities/STM32F3xx_Nucleo_32&quot;"/>
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.2202577" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
@@ -44,6 +50,7 @@
 									<listOptionValue builtIn="false" value="DEBUG"/>
 									<listOptionValue builtIn="false" value="USE_HAL_DRIVER"/>
 									<listOptionValue builtIn="false" value="STM32F303x8"/>
+									<listOptionValue builtIn="false" value="INCLUDE_FATFS"/>
 								</option>
 								<option id="gnu.c.compiler.option.dialect.std.434282924" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.c99" valueType="enumerated"/>
 								<option id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.fdata.351277871" name="Place the data in their own section (-fdata-sections)" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.fdata" useByScannerDiscovery="false" value="false" valueType="boolean"/>
@@ -56,11 +63,12 @@
 								<option id="gnu.cpp.compiler.option.debugging.level.1960159756" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.2040317505" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/FatFs&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/CMSIS/core&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/CMSIS/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/HAL_Driver/Inc/Legacy&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/HAL_Driver/Inc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/HAL_Driver/Inc/Legacy&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Utilities/STM32F3xx_Nucleo_32&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.608104486" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
@@ -72,6 +80,7 @@
 									<listOptionValue builtIn="false" value="DEBUG"/>
 									<listOptionValue builtIn="false" value="USE_HAL_DRIVER"/>
 									<listOptionValue builtIn="false" value="STM32F303x8"/>
+									<listOptionValue builtIn="false" value="INCLUDE_FATFS"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.1864353350" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.c++98" valueType="enumerated"/>
 								<option id="fr.ac6.managedbuild.gnu.cpp.compiler.option.misc.other.1069322034" name="Other flags" superClass="fr.ac6.managedbuild.gnu.cpp.compiler.option.misc.other" useByScannerDiscovery="false" value="-fmessage-length=0 -mfpu=fpv4-sp-d16" valueType="string"/>
@@ -89,15 +98,72 @@
 							<tool id="fr.ac6.managedbuild.tool.gnu.archiver.385211428" name="MCU GCC Archiver" superClass="fr.ac6.managedbuild.tool.gnu.archiver"/>
 							<tool id="fr.ac6.managedbuild.tool.gnu.cross.assembler.2095436947" name="MCU GCC Assembler" superClass="fr.ac6.managedbuild.tool.gnu.cross.assembler">
 								<option id="gnu.both.asm.option.include.paths.389193869" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/CMSIS/core&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/CMSIS/device&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/HAL_Driver/Inc/Legacy&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/HAL_Driver/Inc&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Utilities/STM32F3xx_Nucleo_32&quot;"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/inc"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/FatFs/src"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/src"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/CMSIS/core"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/CMSIS/device"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/HAL_Driver/Inc/Legacy"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/HAL_Driver/Inc"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/Utilities/STM32F3xx_Nucleo_32"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.214310002" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.assembler.input.711975033" superClass="fr.ac6.managedbuild.tool.gnu.cross.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+					<folderInfo id="fr.ac6.managedbuild.config.gnu.cross.exe.debug.46782725.1185397320" name="/" resourcePath="src">
+						<toolChain id="fr.ac6.managedbuild.toolchain.gnu.cross.exe.debug.1833974833" name="Ac6 STM32 MCU GCC" superClass="fr.ac6.managedbuild.toolchain.gnu.cross.exe.debug" unusedChildren="">
+							<option id="fr.ac6.managedbuild.option.gnu.cross.mcu.1600581302.357259822" name="Mcu" superClass="fr.ac6.managedbuild.option.gnu.cross.mcu.1600581302"/>
+							<option id="fr.ac6.managedbuild.option.gnu.cross.board.1111033525.1955077200" name="Board" superClass="fr.ac6.managedbuild.option.gnu.cross.board.1111033525"/>
+							<option id="fr.ac6.managedbuild.option.gnu.cross.floatabi.1978975224.1748781409" name="Floating-point ABI" superClass="fr.ac6.managedbuild.option.gnu.cross.floatabi.1978975224"/>
+							<option id="fr.ac6.managedbuild.option.gnu.cross.fpu.1875335472.1146071446" name="Floating point hardware" superClass="fr.ac6.managedbuild.option.gnu.cross.fpu.1875335472"/>
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="fr.ac6.managedbuild.targetPlatform.gnu.cross" isAbstract="false" osList="all" superClass="fr.ac6.managedbuild.targetPlatform.gnu.cross"/>
+							<tool id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.1252582353" name="MCU GCC Compiler" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.483497975">
+								<option id="gnu.c.compiler.option.include.paths.278005163" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/src/FatFs/src"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/inc"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/src"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/CMSIS/core"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/CMSIS/device"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/HAL_Driver/Inc/Legacy"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/HAL_Driver/Inc"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/Utilities/STM32F3xx_Nucleo_32"/>
+								</option>
+								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c.1516702970" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c"/>
+								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s.2111054382" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s"/>
+							</tool>
+							<tool id="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.144579484" name="MCU G++ Compiler" superClass="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.1570052576">
+								<option id="gnu.cpp.compiler.option.include.paths.1450917131" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/src/FatFs/src"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/inc"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/src"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/CMSIS/core"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/CMSIS/device"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/HAL_Driver/Inc/Legacy"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/HAL_Driver/Inc"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/Utilities/STM32F3xx_Nucleo_32"/>
+								</option>
+								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.cpp.1660355578" superClass="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.cpp"/>
+								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.s.1604102440" superClass="fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.s"/>
+							</tool>
+							<tool id="fr.ac6.managedbuild.tool.gnu.cross.c.linker.1741591910" name="MCU GCC Linker" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.linker.795429847"/>
+							<tool id="fr.ac6.managedbuild.tool.gnu.cross.cpp.linker.885083184" name="MCU G++ Linker" superClass="fr.ac6.managedbuild.tool.gnu.cross.cpp.linker.48627197"/>
+							<tool id="fr.ac6.managedbuild.tool.gnu.archiver.1020261974" name="MCU GCC Archiver" superClass="fr.ac6.managedbuild.tool.gnu.archiver.385211428"/>
+							<tool id="fr.ac6.managedbuild.tool.gnu.cross.assembler.2004105731" name="MCU GCC Assembler" superClass="fr.ac6.managedbuild.tool.gnu.cross.assembler.2095436947">
+								<option id="gnu.both.asm.option.include.paths.994491898" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/src/FatFs/src"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/inc"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/src"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/CMSIS/core"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/CMSIS/device"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/HAL_Driver/Inc/Legacy"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/HAL_Driver/Inc"/>
+									<listOptionValue builtIn="false" value="D:/Documents/SW4STM32_workspace/Helicopter_HAL/Utilities/STM32F3xx_Nucleo_32"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1446880656" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.assembler.input.875451200" superClass="fr.ac6.managedbuild.tool.gnu.cross.assembler.input"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
@@ -105,7 +171,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="HAL_Driver"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Utilities"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="FatFs/src/option/ccsbcs.c|FatFs/src/option/cc950.c|FatFs/src/option/cc932.c|FatFs/src/option/cc949.c|FatFs/src/option/cc936.c|FatFs/doc" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="startup"/>
 					</sourceEntries>
 				</configuration>
@@ -204,7 +270,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="HAL_Driver"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Utilities"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="inc"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="FatFs/src/option/ccsbcs.c|FatFs/src/option/cc950.c|FatFs/src/option/cc949.c|FatFs/src/option/cc936.c|FatFs/src/option/cc932.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="startup"/>
 					</sourceEntries>
 				</configuration>
@@ -215,21 +281,6 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="HAL.fr.ac6.managedbuild.target.gnu.cross.exe.421908231" name="Executable" projectType="fr.ac6.managedbuild.target.gnu.cross.exe"/>
 	</storageModule>
-	<storageModule moduleId="scannerConfiguration">
-		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="fr.ac6.managedbuild.config.gnu.cross.exe.debug.46782725;fr.ac6.managedbuild.config.gnu.cross.exe.debug.46782725.;fr.ac6.managedbuild.tool.gnu.cross.c.compiler.483497975;fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c.2126746432">
-			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="fr.ac6.managedbuild.config.gnu.cross.exe.release.994717416;fr.ac6.managedbuild.config.gnu.cross.exe.release.994717416.;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.887673696;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.cpp.252841049">
-			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="fr.ac6.managedbuild.config.gnu.cross.exe.debug.46782725;fr.ac6.managedbuild.config.gnu.cross.exe.debug.46782725.;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.1570052576;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.cpp.1342524804">
-			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="fr.ac6.managedbuild.config.gnu.cross.exe.release.994717416;fr.ac6.managedbuild.config.gnu.cross.exe.release.994717416.;fr.ac6.managedbuild.tool.gnu.cross.c.compiler.742579349;fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c.86190457">
-			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId=""/>
-		</scannerConfigBuildInfo>
-	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="Debug">
@@ -238,5 +289,20 @@
 		<configuration configurationName="Release">
 			<resource resourceType="PROJECT" workspacePath="/Helicopter_HAL"/>
 		</configuration>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="fr.ac6.managedbuild.config.gnu.cross.exe.release.994717416;fr.ac6.managedbuild.config.gnu.cross.exe.release.994717416.;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.887673696;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.cpp.252841049">
+			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="fr.ac6.managedbuild.config.gnu.cross.exe.debug.46782725;fr.ac6.managedbuild.config.gnu.cross.exe.debug.46782725.;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.1570052576;fr.ac6.managedbuild.tool.gnu.cross.cpp.compiler.input.cpp.1342524804">
+			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="fr.ac6.managedbuild.config.gnu.cross.exe.debug.46782725;fr.ac6.managedbuild.config.gnu.cross.exe.debug.46782725.;fr.ac6.managedbuild.tool.gnu.cross.c.compiler.483497975;fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c.2126746432">
+			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="fr.ac6.managedbuild.config.gnu.cross.exe.release.994717416;fr.ac6.managedbuild.config.gnu.cross.exe.release.994717416.;fr.ac6.managedbuild.tool.gnu.cross.c.compiler.742579349;fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c.86190457">
+			<autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
 	</storageModule>
 </cproject>

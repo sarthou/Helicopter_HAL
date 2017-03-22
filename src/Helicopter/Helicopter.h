@@ -10,6 +10,7 @@
 
 #include "CommunicationProtocol.h"
 #include "Waveform.h"
+#include "FatFs/ff_gen_drv.h"
 
 #include "PWM/Pwm_driver.h"
 #include "I2C/I2c_driver.h"
@@ -64,6 +65,9 @@ private:
 	 * 	add m_remotePC initialization in constructor
 	 * 	replace standard I/O redirection with the original one (on USB and not Bluetooth)
 	 */
+	FATFS m_SDFatFs;
+	FIL m_file;
+	char m_SDPath[4];
 
 	uint16_t m_Te;
 	uint32_t m_Tsim;
