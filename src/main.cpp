@@ -23,7 +23,7 @@
 
 #include "Helicopter/Helicopter.h"
 
-void SystemClock_Config(void)
+static void SystemClock_Config(void)
 {
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
   RCC_OscInitTypeDef RCC_OscInitStruct;
