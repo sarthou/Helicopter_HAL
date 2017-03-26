@@ -14,6 +14,8 @@
 
 #include "PWM/Pwm_driver.h"
 #include "I2C/I2c_driver.h"
+
+#include "PWM/Pwm_init.h"
 #include "I2C/I2c_init.h"
 
 class Helicopter
@@ -59,12 +61,8 @@ private:
 	AnalogOut m_dac1;
 	AnalogOut m_dac2;*/
 	I2C_HandleTypeDef m_i2c;
-	//RawSerial m_remotePC;
 	UART_HandleTypeDef m_remotePC;
-	/* TODO:
-	 * 	add m_remotePC initialization in constructor
-	 * 	replace standard I/O redirection with the original one (on USB and not Bluetooth)
-	 */
+
 	FATFS m_SDFatFs;
 	FIL m_file;
 	char m_SDPath[4];

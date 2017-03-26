@@ -68,7 +68,7 @@ void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
 	MOTOR_MAIN_CLK_PORT();
 
 	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;//GPIO_PULLUP;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 
 	GPIO_InitStruct.Alternate = MOTOR_MAIN_GPIO_AF;
@@ -80,7 +80,7 @@ void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
 	MOTOR_TAIL_CLK_PORT();
 
 	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;//GPIO_PULLUP;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 
 	GPIO_InitStruct.Alternate = MOTOR_TAIL_GPIO_AF;

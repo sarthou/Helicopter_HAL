@@ -19,3 +19,10 @@ void HAL_SYSTICK_Callback(void)
 {
 	instance->process();
 }
+
+HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
+{
+  HAL_NVIC_SetPriority(SysTick_IRQn, TickPriority ,0U);
+
+  return HAL_OK;
+}

@@ -9,15 +9,15 @@
 */
 
 
-#include "ADC/Adc_init.h"
+//#include "ADC/Adc_init.h"
 #include "UART/Uart_init.h"
 #include "PWM/Pwm_init.h"
-#include "I2C/I2c_init.h"
+//#include "I2C/I2c_init.h"
 
-#include "ADC/Adc_driver.h"
+//#include "ADC/Adc_driver.h"
 #include "UART/Uart_driver.h"
 #include "PWM/Pwm_driver.h"
-#include "I2C/I2c_driver.h"
+//#include "I2C/I2c_driver.h"
 
 #include "Error_handler/Error_handler.h"
 
@@ -67,13 +67,13 @@ static void SystemClock_Config(void)
 	MainMotorPWM_init(&motorMain);
 	TailMotorPWM_init(&motorTail);
 
-	DRV_PWM_setPeriod(&motorMain, 10);
-	DRV_PWM_setDutyCycle(&motorMain, 0.2);
+	DRV_PWM_setPeriod(&motorMain, 1000);
+	DRV_PWM_setDutyCycle(&motorMain, 0.5);
 
-	DRV_PWM_setPeriod(&motorTail, 1);
+	DRV_PWM_setPeriod(&motorTail, 1000);
 	DRV_PWM_setDutyCycle(&motorTail, 0.5);
 
-	DRV_UART_printf(uart,"hello word\n\r");
+	/*DRV_UART_printf(uart,"hello word\n\r");
 
 	while(1)
 	{

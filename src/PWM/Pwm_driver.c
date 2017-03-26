@@ -18,8 +18,8 @@ void DRV_PWM_init(pwm_t* pwm, TIM_TypeDef* tim, uint32_t channel)
 	if(HAL_TIM_PWM_DeInit(&pwm->htim) != HAL_OK)
 		Error_Handler();
 
-	DRV_PWM_setPeriod(pwm, 0);
-	DRV_PWM_setDutyCycle(pwm, 0);
+	//DRV_PWM_setPeriod(pwm, 0);
+	//DRV_PWM_setDutyCycle(pwm, 0);
 }
 
 void DRV_PWM_setPeriod(pwm_t* pwm, uint32_t period_us)
@@ -50,6 +50,11 @@ void DRV_PWM_setDutyCycle(pwm_t* pwm, float dutyCycle)
 	sConfig.OCNPolarity  = TIM_OCNPOLARITY_HIGH;
 	sConfig.OCIdleState  = TIM_OCIDLESTATE_RESET;
 	sConfig.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+
+	if(dutyCycle > 1.0f)
+		dutyCycle = 1.0f;
+	else if(dutyCycle < 0.0f)
+		dutyCycle = 0.0f;
 
 	sConfig.Pulse = (uint32_t)((pwm->period_tick + 1) * dutyCycle);
 	if(HAL_TIM_PWM_ConfigChannel(&pwm->htim, &sConfig, pwm->channel) != HAL_OK)

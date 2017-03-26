@@ -14,7 +14,7 @@
 extern "C" {
 #endif // __cplusplus
 
-#define TIM_COUNTER_CLOCK_MHZ (uint32_t)(16000000)
+#define TIM_COUNTER_CLOCK_MHZ (uint32_t)(32000000)
 
 typedef struct pwm_s
 {

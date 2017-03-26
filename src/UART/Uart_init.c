@@ -2,16 +2,16 @@
 #include "Uart_driver.h"
 
 /*COMMON*/
-#define USART_NO                         USART2 //BLE UART1
-#define USART_NO_CLK_ENABLE()            __HAL_RCC_USART2_CLK_ENABLE()
-#define USART_AF                     	GPIO_AF7_USART2
+#define USART_NO                         USART1 //BLE UART1 / USB UART2
+#define USART_NO_CLK_ENABLE()            __HAL_RCC_USART1_CLK_ENABLE()//__HAL_RCC_USART2_CLK_ENABLE()
+#define USART_AF                     	GPIO_AF7_USART1
 
 /*TX*/
-#define USARTx_TX_PIN                    GPIO_PIN_2//BLE 9
+#define USARTx_TX_PIN                    GPIO_PIN_9//BLE 9 / USB 2
 #define USARTx_TX_GPIO_PORT              GPIOA
 
 /*RX*/
-#define USARTx_RX_PIN                    GPIO_PIN_15//BLE 10
+#define USARTx_RX_PIN                    GPIO_PIN_10//BLE 10 / USB 15
 #define USARTx_RX_GPIO_PORT              GPIOA
 
 void HAL_UART_MspInit(UART_HandleTypeDef *huart)
