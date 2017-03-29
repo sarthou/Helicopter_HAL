@@ -8,21 +8,23 @@
 #ifndef HELICOPTER_H_
 #define HELICOPTER_H_
 
-#include "CommunicationProtocol.h"
-#include "Waveform.h"
-#include "FatFs/ff_gen_drv.h"
+#include <Helicopter/CommunicationProtocol.h>
+#include <Helicopter/Waveform.h>
+//#include <FatFs/ff_gen_drv.h>
 
-#include "PWM/Pwm_driver.h"
-#include "I2C/I2c_driver.h"
+#include <Pwm/Pwm_driver.h>
+#include <Pwm/Pwm_init.h>
 
-#include "PWM/Pwm_init.h"
-#include "I2C/I2c_init.h"
+#include <Uart/Uart_driver.h>
+#include <Uart/Uart_init.h>
+
 
 class Helicopter
 {
 public:
 
 	Helicopter();
+	~Helicopter();
 
 	void run();
 	void stop();
@@ -53,19 +55,19 @@ private:
 
 	void process();
 
-	pwm_t m_motorMain;
-	pwm_t m_motorTail;
+	DRV_PWM_TypeDef m_motorMain;
+	DRV_PWM_TypeDef m_motorTail;
 
-	/*AnalogIn m_adc1;
-	AnalogIn m_adc2;
-	AnalogOut m_dac1;
-	AnalogOut m_dac2;*/
-	I2C_HandleTypeDef m_i2c;
-	UART_HandleTypeDef m_remotePC;
+	//AnalogIn m_adc1;
+	//AnalogIn m_adc2;
+	//AnalogOut m_dac1;
+	//AnalogOut m_dac2;
+	//I2C_HandleTypeDef m_i2c;
+	DRV_UART_TypeDef m_remotePc;
 
-	FATFS m_SDFatFs;
-	FIL m_file;
-	char m_SDPath[4];
+	//FATFS m_SDFatFs;
+	//FIL m_file;
+	//char m_SDPath[4];
 
 	uint16_t m_Te;
 	uint32_t m_Tsim;
@@ -73,8 +75,6 @@ private:
 
 	Waveform* m_waveformMain;
 	Waveform* m_waveformTail;
-
-	//Ticker m_ticker;
 
 	bool m_isRunning;
 };

@@ -5,39 +5,59 @@
  *      Author: JulienCombattelli
  */
 
-#include "Helicopter.h"
-#include "CommunicationProtocol.h"
-#include "UART/Uart_init.h"
-#include "UART/Uart_driver.h"
-#include "StringUtility.h"
+#include <Helicopter/Helicopter.h>
+#include <Helicopter/CommunicationProtocol.h>
 
-#include "SysTick/SysTick.h"
+#include <Helicopter/StringUtility.h>
 
-#include "SD/sd_diskio.h"
-#include "Error_handler/Error_handler.h"
+//#include "SD/sd_diskio.h"
+#include <Error_handler/Error_handler.h>
 
+
+/*
+ * Static Helicopter instance use for SysTick timer interrupt handler
+ */
+static Helicopter* helicopterInstance = NULL;
+
+
+
+/*
+ * HAL SysTick overloaded functions
+ */
+void HAL_SYSTICK_Callback(void)
+{
+	helicopterInstance->process();
+}
+
+HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
+{
+	HAL_NVIC_SetPriority((IRQn_Type)SysTick_IRQn, TickPriority ,0U);
+
+	return HAL_OK;
+}
+
+
+
+/*
+ * Helicopter methods definitions
+ */
 Helicopter::Helicopter() :
-	//m_motorMain(PIN_MOT_1), m_motorTail(PIN_MOT_2),
-	//m_adc1(PIN_ADC_1), m_adc2(PIN_ADC_2),
-	//m_dac1(PIN_DAC_1), m_dac2(PIN_DAC_2)
 	m_Te(0), m_Tsim(0), m_currentTime(0),
 	m_waveformMain(NULL),
 	m_waveformTail(NULL),
 	m_isRunning(false)
 {
 	MainMotorPWM_init(&m_motorMain);
+	DRV_PWM_setDutyCycle(&m_motorMain, 0.7);
+
 	TailMotorPWM_init(&m_motorTail);
-	DRV_PWM_setPeriod(&m_motorMain, 100);
-	DRV_PWM_setPeriod(&m_motorTail, 100);
-	motorMainSetSpeed(0);
-	motorTailSetSpeed(0);
+	DRV_PWM_setDutyCycle(&m_motorTail, 0.1);
 
-	SysTick_setInstance(this);
+	//MPU9250_I2C_init(&m_i2c);
+	USB_UART_init(&m_remotePc);
+	DRV_UART_puts(&m_remotePc, "hello \r\n");
 
-	MPU9250_I2C_init(&m_i2c);
-	USB_UART_init(&m_remotePC);
-	DRV_UART_transmit(&m_remotePC, (uint8_t*)"hello \r\n");
-
+	helicopterInstance = this;
 
 	//SD card
 	/*UINT byteswritten;
@@ -58,27 +78,32 @@ Helicopter::Helicopter() :
 	//END SD card
 }
 
+Helicopter::~Helicopter()
+{
+	helicopterInstance = NULL;
+}
+
 void Helicopter::run()
 {
-	/*uint32_t freq = HAL_RCC_GetHCLKFreq();
-	HAL_SYSTICK_Config((uint32_t)(freq * 1000.f / 1000000.f));*/
-	DRV_UART_transmit(&m_remotePC, (uint8_t*)"run \r\n");
+	//uint32_t freq = HAL_RCC_GetHCLKFreq();
+	//HAL_SYSTICK_Config((uint32_t)(freq * 1000.f / 1000000.f));
+	DRV_UART_puts(&m_remotePc, "run\r\n");
 	while(1)
 	{
-		if(DRV_UART_readable(&m_remotePC))
+		if(DRV_UART_readable(&m_remotePc))
 		{
 			char cmd = 0;
-			cmd = DRV_UART_getchar(&m_remotePC);
-			cmd = DRV_UART_getchar(&m_remotePC);
+			cmd = DRV_UART_getc(&m_remotePc);
+			cmd = DRV_UART_getc(&m_remotePc);
 			switch(cmd)
 			{
 			case 0x01:
 				if(not m_isRunning)
-					motorMainSetSpeed(((float)DRV_UART_getchar(&m_remotePC))/100.f);
+					motorMainSetSpeed(((float)DRV_UART_getc(&m_remotePc))/100.f);
 				break;
 			case 0x02:
 				if(not m_isRunning)
-					motorTailSetSpeed(((float)DRV_UART_getchar(&m_remotePC))/100.f);
+					motorTailSetSpeed(((float)DRV_UART_getc(&m_remotePc))/100.f);
 				break;
 			case FrameType_Stop:
 				stop();
@@ -120,17 +145,17 @@ void Helicopter::motorMainSetSpeed(float speed)
 
 void Helicopter::motorMainIncreaseSpeed(float speed)
 {
-	DRV_PWM_setDutyCycle(&m_motorMain, m_motorMain.dutyCycle - speed);
+	DRV_PWM_setDutyCycle(&m_motorMain, DRV_PWM_getDutyCycle(&m_motorMain) - speed);
 }
 
 void Helicopter::motorMainDecreaseSpeed(float speed)
 {
-	DRV_PWM_setDutyCycle(&m_motorMain, m_motorMain.dutyCycle + speed);
+	DRV_PWM_setDutyCycle(&m_motorMain, DRV_PWM_getDutyCycle(&m_motorMain) + speed);
 }
 
 int Helicopter::motorMainGetSpeed()
 {
-	return 100 - (int(m_motorMain.dutyCycle * 100.f));
+	return 100 - (int(DRV_PWM_getDutyCycle(&m_motorMain) * 100.f));
 }
 
 void Helicopter::motorTailSetSpeed(float speed)
@@ -140,17 +165,17 @@ void Helicopter::motorTailSetSpeed(float speed)
 
 void Helicopter::motorTailIncreaseSpeed(float speed)
 {
-	DRV_PWM_setDutyCycle(&m_motorTail, m_motorTail.dutyCycle - speed);
+	DRV_PWM_setDutyCycle(&m_motorTail, DRV_PWM_getDutyCycle(&m_motorTail) - speed);
 }
 
 void Helicopter::motorTailDecreaseSpeed(float speed)
 {
-	DRV_PWM_setDutyCycle(&m_motorTail, m_motorTail.dutyCycle + speed);
+	DRV_PWM_setDutyCycle(&m_motorTail, DRV_PWM_getDutyCycle(&m_motorTail) + speed);
 }
 
 int Helicopter::motorTailGetSpeed()
 {
-	return 100 - (int(m_motorTail.dutyCycle * 100.f));
+	return 100 - (int(DRV_PWM_getDutyCycle(&m_motorTail) * 100.f));
 }
 
 void Helicopter::setAnalog1(float value)
@@ -191,7 +216,7 @@ void Helicopter::handleSignalRotorMainFrame()
 	receive(buffer, 4);
 	uint32_t Tstart = to_uint32(buffer);
 
-	uint8_t waveform = getchar();
+	uint8_t waveform = DRV_UART_getc(&m_remotePc);
 	switch(waveform)
 	{
 		case WaveformType_Step:
@@ -218,7 +243,7 @@ void Helicopter::handleSignalRotorTailFrame()
 	receive(buffer, 4);
 	uint32_t Tstart = to_uint32(buffer);
 
-	uint8_t waveform = getchar();
+	uint8_t waveform = DRV_UART_getc(&m_remotePc);
 	switch(waveform)
 	{
 		case WaveformType_Step:
@@ -242,21 +267,18 @@ void Helicopter::handleStartFrame()
 {
 	m_isRunning = true;
 	HAL_SYSTICK_Config((uint32_t)(HAL_RCC_GetHCLKFreq() * m_Te / 1000000.f));
-		//m_ticker.attach_us(callback(this, &Helicopter::process), m_Te);
 }
 
 void Helicopter::process()
 {
 	float commandRotorMain = m_waveformMain->generate(m_currentTime)/100000000.f;
-	//printf("main : %d\r\n", int(commandRotorMain*100));
-	//printf("main : %lu at time : %lu\r\n", m_waveformMain->generate(m_currentTime), m_currentTime*m_Te);
 	motorMainSetSpeed(commandRotorMain);
 
 	float commandRotorTail = m_waveformTail->generate(m_currentTime)/100000000.f;
-	//printf("tail : %d\r\n", int(commandRotorTail*100));
 	motorTailSetSpeed(commandRotorTail);
 
 	m_currentTime++;
 	if(m_currentTime > m_Tsim)
 		stop();
 }
+

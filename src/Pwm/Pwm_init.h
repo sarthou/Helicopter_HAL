@@ -8,15 +8,15 @@
 #ifndef PWM_PWM_INIT_H_
 #define PWM_PWM_INIT_H_
 
-#include "PWM/Pwm_driver.h"
+#include <Pwm/Pwm_driver.h>
 
 #ifdef __cplusplus
 extern "C"{
 #endif
 
-void MainMotorPWM_init(pwm_t* pwm);
+void MainMotorPWM_init(DRV_PWM_TypeDef* pwm);
 
-void TailMotorPWM_init(pwm_t* pwm);
+void TailMotorPWM_init(DRV_PWM_TypeDef* pwm);
 
 #ifdef __cplusplus
 }

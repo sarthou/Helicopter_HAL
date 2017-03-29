@@ -43,6 +43,8 @@
  * Tail motor : PA_11
  */
 
+#define MOTOR_PWM_PERIOD		(int)(100)
+
 #define MOTOR_MAIN_PIN 			GPIO_PIN_8
 #define MOTOR_MAIN_PORT 		GPIOA
 #define MOTOR_MAIN_CLK_PORT		__HAL_RCC_GPIOA_CLK_ENABLE
@@ -68,7 +70,7 @@ void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
 	MOTOR_MAIN_CLK_PORT();
 
 	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;//GPIO_PULLUP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 
 	GPIO_InitStruct.Alternate = MOTOR_MAIN_GPIO_AF;
@@ -80,7 +82,7 @@ void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
 	MOTOR_TAIL_CLK_PORT();
 
 	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;//GPIO_PULLUP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 
 	GPIO_InitStruct.Alternate = MOTOR_TAIL_GPIO_AF;
@@ -88,12 +90,14 @@ void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
 	HAL_GPIO_Init(MOTOR_TAIL_PORT, &GPIO_InitStruct);
 }
 
-void MainMotorPWM_init(pwm_t* pwm)
+void MainMotorPWM_init(DRV_PWM_TypeDef* pwm)
 {
 	DRV_PWM_init(pwm, MOTOR_MAIN_TIMx, MOTOR_MAIN_PWM_CHANNEL);
+	DRV_PWM_setPeriod(pwm, 100);
 }
 
-void TailMotorPWM_init(pwm_t* pwm)
+void TailMotorPWM_init(DRV_PWM_TypeDef* pwm)
 {
 	DRV_PWM_init(pwm, MOTOR_TAIL_TIMx, MOTOR_TAIL_PWM_CHANNEL);
+	DRV_PWM_setPeriod(pwm, 100);
 }
