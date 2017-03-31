@@ -13,7 +13,8 @@
 enum WaveformType
 {
 	WaveformType_Step = 0x00,
-	WaveformType_Ramp = 0x01
+	WaveformType_Ramp = 0x01,
+	WaveformType_PRBS = 0x02
 };
 
 class Waveform

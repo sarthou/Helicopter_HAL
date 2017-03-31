@@ -94,10 +94,12 @@ void MainMotorPWM_init(DRV_PWM_TypeDef* pwm)
 {
 	DRV_PWM_init(pwm, MOTOR_MAIN_TIMx, MOTOR_MAIN_PWM_CHANNEL);
 	DRV_PWM_setPeriod(pwm, 100);
+	DRV_PWM_setDutyCycle(pwm, 100.f);
 }
 
 void TailMotorPWM_init(DRV_PWM_TypeDef* pwm)
 {
 	DRV_PWM_init(pwm, MOTOR_TAIL_TIMx, MOTOR_TAIL_PWM_CHANNEL);
 	DRV_PWM_setPeriod(pwm, 100);
+	DRV_PWM_setDutyCycle(pwm, 100.f);
 }

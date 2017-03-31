@@ -262,16 +262,22 @@ void DRV_UART_irq_set(DRV_UART_TypeDef *obj, SerialIrq irq, uint32_t enable)
 	}
 }*/
 
-int DRV_UART_getc(DRV_UART_TypeDef *obj)
+uint8_t DRV_UART_getc(DRV_UART_TypeDef *obj)
 {
 	UART_HandleTypeDef *huart = &uart_handlers[obj->index];
 
 	while(!DRV_UART_readable(obj));
 
 	if(obj->databits == UART_WORDLENGTH_8B)
-		return (int)(huart->Instance->RDR & (uint8_t)0xFF);
+		return (uint8_t)(huart->Instance->RDR & (uint8_t)0xFF);
 	else
-		return (int)(huart->Instance->RDR & (uint16_t)0x1FF);
+		return (uint8_t)(huart->Instance->RDR & (uint16_t)0x1FF);
+}
+
+void DRV_UART_read(DRV_UART_TypeDef *obj, uint8_t *buffer, size_t nbytes)
+{
+	for(int i = 0 ; i < nbytes ; i++)
+		buffer[i] = DRV_UART_getc(obj);
 }
 
 void DRV_UART_putc(DRV_UART_TypeDef *obj, int c)

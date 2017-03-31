@@ -6,12 +6,12 @@
  */
 
 #include <Helicopter/Helicopter.h>
-#include <Helicopter/CommunicationProtocol.h>
-
-#include <Helicopter/StringUtility.h>
 
 //#include "SD/sd_diskio.h"
 #include <Error_handler/Error_handler.h>
+#include <Helicopter/Hcp.h>
+
+#include <limits>
 
 
 /*
@@ -26,7 +26,8 @@ static Helicopter* helicopterInstance = NULL;
  */
 void HAL_SYSTICK_Callback(void)
 {
-	helicopterInstance->process();
+	if(helicopterInstance)
+		helicopterInstance->process();
 }
 
 HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
@@ -48,16 +49,14 @@ Helicopter::Helicopter() :
 	m_isRunning(false)
 {
 	MainMotorPWM_init(&m_motorMain);
-	DRV_PWM_setDutyCycle(&m_motorMain, 0.7);
-
 	TailMotorPWM_init(&m_motorTail);
-	DRV_PWM_setDutyCycle(&m_motorTail, 0.1);
 
 	//MPU9250_I2C_init(&m_i2c);
-	USB_UART_init(&m_remotePc);
+	BLE_UART_init(&m_remotePc);
+
 	DRV_UART_puts(&m_remotePc, "hello \r\n");
 
-	helicopterInstance = this;
+	disableSysTickHandler();
 
 	//SD card
 	/*UINT byteswritten;
@@ -80,30 +79,28 @@ Helicopter::Helicopter() :
 
 Helicopter::~Helicopter()
 {
-	helicopterInstance = NULL;
+	disableSysTickHandler();
 }
 
 void Helicopter::run()
 {
-	//uint32_t freq = HAL_RCC_GetHCLKFreq();
-	//HAL_SYSTICK_Config((uint32_t)(freq * 1000.f / 1000000.f));
 	DRV_UART_puts(&m_remotePc, "run\r\n");
+
 	while(1)
 	{
 		if(DRV_UART_readable(&m_remotePc))
 		{
 			char cmd = 0;
 			cmd = DRV_UART_getc(&m_remotePc);
-			cmd = DRV_UART_getc(&m_remotePc);
 			switch(cmd)
 			{
-			case 0x01:
+			case FrameType_ManualRotorMain:
 				if(not m_isRunning)
-					motorMainSetSpeed(((float)DRV_UART_getc(&m_remotePc))/100.f);
+					handleManualRotorMainFrame();
 				break;
-			case 0x02:
+			case FrameType_ManualRotorTail:
 				if(not m_isRunning)
-					motorTailSetSpeed(((float)DRV_UART_getc(&m_remotePc))/100.f);
+					handleManualRotorTailFrame();
 				break;
 			case FrameType_Stop:
 				stop();
@@ -131,7 +128,7 @@ void Helicopter::run()
 
 void Helicopter::stop()
 {
-	//m_ticker.detach();
+	disableSysTickHandler();
 	motorMainSetSpeed(0);
 	motorTailSetSpeed(0);
 	m_isRunning = false;
@@ -198,39 +195,94 @@ float Helicopter::getAnalog2()
 	return 0;//m_adc2.read();
 }
 
+void Helicopter::setSysTickTimer(uint32_t period_us)
+{
+	float freq = (float)HAL_RCC_GetHCLKFreq();
+	uint32_t ticknumb = (uint32_t)(freq * period_us / 1000000.f);
+	HAL_SYSTICK_Config(ticknumb);
+}
+
+void Helicopter::enableSysTickHandler()
+{
+	helicopterInstance = this;
+}
+
+void Helicopter::disableSysTickHandler()
+{
+	helicopterInstance = NULL;
+}
+
+void Helicopter::handleManualRotorMainFrame()
+{
+	uint8_t buffer[2];
+
+	DRV_UART_read(&m_remotePc, buffer, 2);
+	int value = HCP_toUint16(buffer);
+
+	DRV_UART_printf(&m_remotePc, "main = %d\r\n", value);
+	motorMainSetSpeed(((float)value)/std::numeric_limits<uint16_t>::max());
+}
+
+void Helicopter::handleManualRotorTailFrame()
+{
+	uint8_t buffer[2];
+
+	DRV_UART_read(&m_remotePc, buffer, 2);
+	int value = HCP_toUint16(buffer);
+
+	DRV_UART_printf(&m_remotePc, "tail = %d\r\n", value);
+	motorTailSetSpeed(((float)value)/std::numeric_limits<uint16_t>::max());
+}
+
 void Helicopter::handleInitializationFrame()
 {
 	uint8_t buffer[4];
 
-	receive(buffer, 2);
-	m_Te = to_uint16(buffer);
+	DRV_UART_read(&m_remotePc, buffer, 2);
+	m_Te = HCP_toUint16(buffer);
 
-	receive(buffer,4);
-	m_Tsim = to_uint32(buffer);
+	DRV_UART_read(&m_remotePc, buffer, 4);
+	m_Tsim = HCP_toUint32(buffer);
 }
 
 void Helicopter::handleSignalRotorMainFrame()
 {
 	uint8_t buffer[4];
 
-	receive(buffer, 4);
-	uint32_t Tstart = to_uint32(buffer);
-
 	uint8_t waveform = DRV_UART_getc(&m_remotePc);
 	switch(waveform)
 	{
 		case WaveformType_Step:
 		{
-			receive(buffer, 4);
-			uint32_t finalValue = to_uint32(buffer);
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t Tstart = HCP_toUint32(buffer);
+
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t finalValue = HCP_toUint32(buffer);
 			m_waveformMain = new StepWaveform(Tstart, finalValue);
 			break;
 		}
 		case WaveformType_Ramp:
 		{
-			receive(buffer, 4);
-			uint32_t slope = to_uint32(buffer);
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t Tstart = HCP_toUint32(buffer);
+
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t slope = HCP_toUint32(buffer);
 			m_waveformMain = new RampWaveform(Tstart, slope);
+			break;
+		}
+		case WaveformType_PRBS:
+		{
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t min = HCP_toUint32(buffer);
+
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t max = HCP_toUint32(buffer);
+
+			DRV_UART_read(&m_remotePc, buffer, 2);
+			uint32_t seed = HCP_toUint16(buffer);
+			m_waveformMain = new Sequence();
 			break;
 		}
 	}
@@ -240,24 +292,40 @@ void Helicopter::handleSignalRotorTailFrame()
 {
 	uint8_t buffer[4];
 
-	receive(buffer, 4);
-	uint32_t Tstart = to_uint32(buffer);
-
 	uint8_t waveform = DRV_UART_getc(&m_remotePc);
 	switch(waveform)
 	{
 		case WaveformType_Step:
 		{
-			receive(buffer, 4);
-			uint32_t finalValue = to_uint32(buffer);
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t Tstart = HCP_toUint32(buffer);
+
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t finalValue = HCP_toUint32(buffer);
 			m_waveformTail = new StepWaveform(Tstart, finalValue);
 			break;
 		}
 		case WaveformType_Ramp:
 		{
-			receive(buffer, 4);
-			uint32_t slope = to_uint32(buffer);
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t Tstart = HCP_toUint32(buffer);
+
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t slope = HCP_toUint32(buffer);
 			m_waveformTail = new RampWaveform(Tstart, slope);
+			break;
+		}
+		case WaveformType_PRBS:
+		{
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t min = HCP_toUint32(buffer);
+
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t max = HCP_toUint32(buffer);
+
+			DRV_UART_read(&m_remotePc, buffer, 2);
+			uint32_t seed = HCP_toUint16(buffer);
+			//m_waveformMain = new Sequence();
 			break;
 		}
 	}
@@ -266,19 +334,23 @@ void Helicopter::handleSignalRotorTailFrame()
 void Helicopter::handleStartFrame()
 {
 	m_isRunning = true;
-	HAL_SYSTICK_Config((uint32_t)(HAL_RCC_GetHCLKFreq() * m_Te / 1000000.f));
+	setSysTickTimer(m_Te);
+	enableSysTickHandler();
 }
 
 void Helicopter::process()
 {
-	float commandRotorMain = m_waveformMain->generate(m_currentTime)/100000000.f;
-	motorMainSetSpeed(commandRotorMain);
+	if(m_isRunning)
+	{
+		float commandRotorMain = m_waveformMain->generate(m_currentTime)/100000000.f;
+		motorMainSetSpeed(commandRotorMain);
 
-	float commandRotorTail = m_waveformTail->generate(m_currentTime)/100000000.f;
-	motorTailSetSpeed(commandRotorTail);
+		float commandRotorTail = m_waveformTail->generate(m_currentTime)/100000000.f;
+		motorTailSetSpeed(commandRotorTail);
 
-	m_currentTime++;
-	if(m_currentTime > m_Tsim)
-		stop();
+		m_currentTime++;
+		if(m_currentTime > m_Tsim)
+			stop();
+	}
 }
 

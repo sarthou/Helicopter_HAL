@@ -8,7 +8,7 @@
 #ifndef HELICOPTER_H_
 #define HELICOPTER_H_
 
-#include <Helicopter/CommunicationProtocol.h>
+#include <Helicopter/Hcp.h>
 #include <Helicopter/Waveform.h>
 //#include <FatFs/ff_gen_drv.h>
 
@@ -48,6 +48,12 @@ private:
 
 	friend void HAL_SYSTICK_Callback(void);
 
+	void setSysTickTimer(uint32_t period_us);
+	void enableSysTickHandler();
+	void disableSysTickHandler();
+
+	void handleManualRotorMainFrame();
+	void handleManualRotorTailFrame();
 	void handleInitializationFrame();
 	void handleSignalRotorMainFrame();
 	void handleSignalRotorTailFrame();
