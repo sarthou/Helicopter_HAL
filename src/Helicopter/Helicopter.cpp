@@ -272,6 +272,19 @@ void Helicopter::handleSignalRotorMainFrame()
 			m_waveformMain = new RampWaveform(Tstart, slope);
 			break;
 		}
+		case WaveformType_PRBS:
+		{
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t min = HCP_toUint32(buffer);
+
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t max = HCP_toUint32(buffer);
+
+			DRV_UART_read(&m_remotePc, buffer, 2);
+			uint32_t seed = HCP_toUint16(buffer);
+			m_waveformMain = new Sequence();
+			break;
+		}
 	}
 }
 
@@ -300,6 +313,19 @@ void Helicopter::handleSignalRotorTailFrame()
 			DRV_UART_read(&m_remotePc, buffer, 4);
 			uint32_t slope = HCP_toUint32(buffer);
 			m_waveformTail = new RampWaveform(Tstart, slope);
+			break;
+		}
+		case WaveformType_PRBS:
+		{
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t min = HCP_toUint32(buffer);
+
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t max = HCP_toUint32(buffer);
+
+			DRV_UART_read(&m_remotePc, buffer, 2);
+			uint32_t seed = HCP_toUint16(buffer);
+			//m_waveformMain = new Sequence();
 			break;
 		}
 	}
