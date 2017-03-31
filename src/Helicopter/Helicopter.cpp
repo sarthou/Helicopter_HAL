@@ -26,7 +26,8 @@ static Helicopter* helicopterInstance = NULL;
  */
 void HAL_SYSTICK_Callback(void)
 {
-	helicopterInstance->process();
+	if(helicopterInstance)
+		helicopterInstance->process();
 }
 
 HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
@@ -49,12 +50,13 @@ Helicopter::Helicopter() :
 {
 	MainMotorPWM_init(&m_motorMain);
 	TailMotorPWM_init(&m_motorTail);
+
 	//MPU9250_I2C_init(&m_i2c);
 	BLE_UART_init(&m_remotePc);
 
 	DRV_UART_puts(&m_remotePc, "hello \r\n");
 
-	helicopterInstance = this;
+	disableSysTickHandler();
 
 	//SD card
 	/*UINT byteswritten;
@@ -77,7 +79,7 @@ Helicopter::Helicopter() :
 
 Helicopter::~Helicopter()
 {
-	helicopterInstance = NULL;
+	disableSysTickHandler();
 }
 
 void Helicopter::run()
@@ -126,6 +128,7 @@ void Helicopter::run()
 
 void Helicopter::stop()
 {
+	disableSysTickHandler();
 	motorMainSetSpeed(0);
 	motorTailSetSpeed(0);
 	m_isRunning = false;
@@ -192,6 +195,23 @@ float Helicopter::getAnalog2()
 	return 0;//m_adc2.read();
 }
 
+void Helicopter::setSysTickTimer(uint32_t period_us)
+{
+	float freq = (float)HAL_RCC_GetHCLKFreq();
+	uint32_t ticknumb = (uint32_t)(freq * period_us / 1000000.f);
+	HAL_SYSTICK_Config(ticknumb);
+}
+
+void Helicopter::enableSysTickHandler()
+{
+	helicopterInstance = this;
+}
+
+void Helicopter::disableSysTickHandler()
+{
+	helicopterInstance = NULL;
+}
+
 void Helicopter::handleManualRotorMainFrame()
 {
 	uint8_t buffer[2];
@@ -229,14 +249,14 @@ void Helicopter::handleSignalRotorMainFrame()
 {
 	uint8_t buffer[4];
 
-	DRV_UART_read(&m_remotePc, buffer, 4);
-	uint32_t Tstart = HCP_toUint32(buffer);
-
 	uint8_t waveform = DRV_UART_getc(&m_remotePc);
 	switch(waveform)
 	{
 		case WaveformType_Step:
 		{
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t Tstart = HCP_toUint32(buffer);
+
 			DRV_UART_read(&m_remotePc, buffer, 4);
 			uint32_t finalValue = HCP_toUint32(buffer);
 			m_waveformMain = new StepWaveform(Tstart, finalValue);
@@ -244,6 +264,9 @@ void Helicopter::handleSignalRotorMainFrame()
 		}
 		case WaveformType_Ramp:
 		{
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t Tstart = HCP_toUint32(buffer);
+
 			DRV_UART_read(&m_remotePc, buffer, 4);
 			uint32_t slope = HCP_toUint32(buffer);
 			m_waveformMain = new RampWaveform(Tstart, slope);
@@ -256,14 +279,14 @@ void Helicopter::handleSignalRotorTailFrame()
 {
 	uint8_t buffer[4];
 
-	DRV_UART_read(&m_remotePc, buffer, 4);
-	uint32_t Tstart = HCP_toUint32(buffer);
-
 	uint8_t waveform = DRV_UART_getc(&m_remotePc);
 	switch(waveform)
 	{
 		case WaveformType_Step:
 		{
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t Tstart = HCP_toUint32(buffer);
+
 			DRV_UART_read(&m_remotePc, buffer, 4);
 			uint32_t finalValue = HCP_toUint32(buffer);
 			m_waveformTail = new StepWaveform(Tstart, finalValue);
@@ -271,6 +294,9 @@ void Helicopter::handleSignalRotorTailFrame()
 		}
 		case WaveformType_Ramp:
 		{
+			DRV_UART_read(&m_remotePc, buffer, 4);
+			uint32_t Tstart = HCP_toUint32(buffer);
+
 			DRV_UART_read(&m_remotePc, buffer, 4);
 			uint32_t slope = HCP_toUint32(buffer);
 			m_waveformTail = new RampWaveform(Tstart, slope);
@@ -282,20 +308,23 @@ void Helicopter::handleSignalRotorTailFrame()
 void Helicopter::handleStartFrame()
 {
 	m_isRunning = true;
-	uint32_t ticknumb = (uint32_t)(HAL_RCC_GetHCLKFreq() * m_Te / 1000000.f);
-	HAL_SYSTICK_Config(ticknumb);
+	setSysTickTimer(m_Te);
+	enableSysTickHandler();
 }
 
 void Helicopter::process()
 {
-	float commandRotorMain = m_waveformMain->generate(m_currentTime)/100000000.f;
-	motorMainSetSpeed(commandRotorMain);
+	if(m_isRunning)
+	{
+		float commandRotorMain = m_waveformMain->generate(m_currentTime)/100000000.f;
+		motorMainSetSpeed(commandRotorMain);
 
-	float commandRotorTail = m_waveformTail->generate(m_currentTime)/100000000.f;
-	motorTailSetSpeed(commandRotorTail);
+		float commandRotorTail = m_waveformTail->generate(m_currentTime)/100000000.f;
+		motorTailSetSpeed(commandRotorTail);
 
-	m_currentTime++;
-	if(m_currentTime > m_Tsim)
-		stop();
+		m_currentTime++;
+		if(m_currentTime > m_Tsim)
+			stop();
+	}
 }
 

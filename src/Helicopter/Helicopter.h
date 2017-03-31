@@ -48,6 +48,10 @@ private:
 
 	friend void HAL_SYSTICK_Callback(void);
 
+	void setSysTickTimer(uint32_t period_us);
+	void enableSysTickHandler();
+	void disableSysTickHandler();
+
 	void handleManualRotorMainFrame();
 	void handleManualRotorTailFrame();
 	void handleInitializationFrame();
