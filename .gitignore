@@ -7,3 +7,5 @@ Release/
 *.d
 /.cproject
 /.project
+
+NUCLEO-F303K8.xml
