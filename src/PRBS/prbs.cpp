@@ -6,28 +6,48 @@
 #define ACTION 1
 #define NVALSBPA  511
 
-Sequence::Sequence()
+PRBS::PRBS(uint16_t min,uint16_t max,uint16_t seed)
 {
-	m_reg[8]=1;
-	for(unsigned int i=7;i>0;i--)
-	{
-		m_reg[i]=0;
-	}
+	m_reg=seed;
+	m_max=max;
+	m_min=min;
+
 }
 
-bool Sequence::nextValue()
+uint16_t PRBS::nextValue()
 {
-	bool val=0;
-	if (m_reg[4]!=m_reg[8])
+	uint16_t val,val4,val13,val15,val16;
+	val4=getMem(4);
+	val13=getMem(13);
+	val15=getMem(15);
+	val16=getMem(16);
+
+	val=val4^val13^val15^val16;
+
+	setMem(16,val);
+
+	return ((m_max-m_min)*val+m_min);
+
+	/*if (val==1)
 	{
-		val=1;
+		val=m_max;
 	}
-	for (unsigned int i=8;i>0;i--)
+	else
 	{
-		m_reg[i]=m_reg[i-1];
+		val=m_min;
 	}
-	m_reg[0]=val;
 	return val;
+	*/
+}
+
+uint16_t PRBS::getMem(int index)
+{
+	return ((m_reg>>(16-index))&0x1);
+}
+
+void PRBS::setMem(int index, uint16_t value)
+{
+	m_reg=(m_reg>>1)|(value<<(index-1));
 }
 
 
