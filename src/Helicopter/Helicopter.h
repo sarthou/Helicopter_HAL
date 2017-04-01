@@ -10,7 +10,7 @@
 
 #include <Helicopter/Hcp.h>
 #include <Helicopter/Waveform.h>
-//#include <FatFs/ff_gen_drv.h>
+#include <FatFs/ff_gen_drv.h>
 
 #include <Pwm/Pwm_driver.h>
 #include <Pwm/Pwm_init.h>
@@ -71,9 +71,9 @@ private:
 	//I2C_HandleTypeDef m_i2c;
 	DRV_UART_TypeDef m_remotePc;
 
-	//FATFS m_SDFatFs;
-	//FIL m_file;
-	//char m_SDPath[4];
+	FATFS m_SDFatFs;
+	FIL m_file;
+	char m_SDPath[4];
 
 	uint16_t m_Te;
 	uint32_t m_Tsim;

@@ -7,7 +7,7 @@
 
 #include <Helicopter/Helicopter.h>
 
-//#include "SD/sd_diskio.h"
+#include "SD/sd_diskio.h"
 #include <Error_handler/Error_handler.h>
 #include <Helicopter/Hcp.h>
 
@@ -59,7 +59,7 @@ Helicopter::Helicopter() :
 	disableSysTickHandler();
 
 	//SD card
-	/*UINT byteswritten;
+	UINT byteswritten;
 
 	if(FATFS_LinkDriver(&SD_Driver, m_SDPath) != 0)
 		Error_Handler();
@@ -73,7 +73,7 @@ Helicopter::Helicopter() :
 	f_write(&m_file, text, sizeof(text), &byteswritten);
 
 	if (f_close(&m_file) != FR_OK )
-		Error_Handler();*/
+		Error_Handler();
 	//END SD card
 }
 
@@ -84,8 +84,6 @@ Helicopter::~Helicopter()
 
 void Helicopter::run()
 {
-	DRV_UART_puts(&m_remotePc, "run\r\n");
-
 	while(1)
 	{
 		if(DRV_UART_readable(&m_remotePc))
@@ -219,7 +217,6 @@ void Helicopter::handleManualRotorMainFrame()
 	DRV_UART_read(&m_remotePc, buffer, 2);
 	int value = HCP_toUint16(buffer);
 
-	DRV_UART_printf(&m_remotePc, "main = %d\r\n", value);
 	motorMainSetSpeed(((float)value)/std::numeric_limits<uint16_t>::max());
 }
 
@@ -230,7 +227,6 @@ void Helicopter::handleManualRotorTailFrame()
 	DRV_UART_read(&m_remotePc, buffer, 2);
 	int value = HCP_toUint16(buffer);
 
-	DRV_UART_printf(&m_remotePc, "tail = %d\r\n", value);
 	motorTailSetSpeed(((float)value)/std::numeric_limits<uint16_t>::max());
 }
 
@@ -282,7 +278,7 @@ void Helicopter::handleSignalRotorMainFrame()
 
 			DRV_UART_read(&m_remotePc, buffer, 2);
 			uint32_t seed = HCP_toUint16(buffer);
-			m_waveformMain = new Sequence();
+			//m_waveformMain = new PRBS(min, max, seed);
 			break;
 		}
 	}
@@ -325,7 +321,7 @@ void Helicopter::handleSignalRotorTailFrame()
 
 			DRV_UART_read(&m_remotePc, buffer, 2);
 			uint32_t seed = HCP_toUint16(buffer);
-			//m_waveformMain = new Sequence();
+			//m_waveformTail = new PRBS(min, max, seed);
 			break;
 		}
 	}
