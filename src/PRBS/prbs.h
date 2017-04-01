@@ -24,13 +24,13 @@ public:
 	uint16_t nextValue();
 
 private:
-uint16_t m_reg;
-uint16_t m_max;
-uint16_t m_min;
+	uint16_t m_reg;
+	uint16_t m_max;
+	uint16_t m_min;
 
-uint16_t getMem(int index);
+	uint16_t getMem(int index);
 
-void setMem(int index, uint16_t value);
+	void setMem(int index, uint16_t value);
 
 };
 
