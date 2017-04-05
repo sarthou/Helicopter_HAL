@@ -7,9 +7,9 @@
 
 #include <Helicopter/Helicopter.h>
 
-#include "SD/sd_diskio.h"
 #include <Error_handler/Error_handler.h>
 #include <Helicopter/Hcp.h>
+#include <SDCard/sd_diskio.h>
 
 #include <limits>
 
@@ -46,7 +46,8 @@ Helicopter::Helicopter() :
 	m_Te(0), m_Tsim(0), m_currentTime(0),
 	m_waveformMain(NULL),
 	m_waveformTail(NULL),
-	m_isRunning(false)
+	m_isRunning(false),
+	m_isTimeToSendData(false)
 {
 	MainMotorPWM_init(&m_motorMain);
 	TailMotorPWM_init(&m_motorTail);
@@ -59,11 +60,11 @@ Helicopter::Helicopter() :
 	disableSysTickHandler();
 
 	//SD card
-	UINT byteswritten;
+	uint32_t byteswritten;
 
 	if(FATFS_LinkDriver(&SD_Driver, m_SDPath) != 0)
 		Error_Handler();
-	if(f_mount(&m_SDFatFs, (TCHAR const*)m_SDPath, 0) != FR_OK)
+	if(f_mount(&m_SDFatFs, (char const*)m_SDPath, 0) != FR_OK)
 		Error_Handler();
 
 	if(f_open(&m_file, "STM32.TXT", FA_OPEN_ALWAYS | FA_WRITE) != FR_OK)
@@ -86,6 +87,37 @@ void Helicopter::run()
 {
 	while(1)
 	{
+		if(m_isTimeToSendData)
+		{
+			uint8_t buffer[4] = {0};
+			uint32_t bytesread = 0;
+			m_isTimeToSendData = false;
+
+			if(f_open(&m_file, "SAMPLE1.TXT", FA_OPEN_EXISTING | FA_READ) != FR_OK)
+				Error_Handler();
+
+			DRV_UART_putc(&m_remotePc, FrameType_StartTransmission);
+
+			f_read(&m_file, buffer, sizeof(uint16_t), &bytesread);
+			DRV_UART_write(&m_remotePc, buffer, sizeof(uint16_t));
+
+			f_read(&m_file, buffer, sizeof(uint32_t), &bytesread);
+			DRV_UART_write(&m_remotePc, buffer, sizeof(uint32_t));
+
+			f_read(&m_file, buffer, sizeof(uint16_t), &bytesread);
+			DRV_UART_write(&m_remotePc, buffer, sizeof(uint16_t));
+
+			int nb = 0;
+			while(not f_eof(&m_file))
+			{
+				f_read(&m_file, buffer, sizeof(float), &bytesread);
+				DRV_UART_write(&m_remotePc, buffer, sizeof(float));
+				nb++;
+			}
+
+			if(f_close(&m_file) != FR_OK )
+				Error_Handler();
+		}
 		if(DRV_UART_readable(&m_remotePc))
 		{
 			char cmd = 0;
@@ -119,7 +151,7 @@ void Helicopter::run()
 				if(not m_isRunning)
 					handleStartFrame();
 				break;
-			};
+			}
 		}
 	}
 }
@@ -127,6 +159,7 @@ void Helicopter::run()
 void Helicopter::stop()
 {
 	disableSysTickHandler();
+	f_close(&m_file);
 	motorMainSetSpeed(0);
 	motorTailSetSpeed(0);
 	m_isRunning = false;
@@ -278,7 +311,9 @@ void Helicopter::handleSignalRotorMainFrame()
 
 			DRV_UART_read(&m_remotePc, buffer, 2);
 			uint32_t seed = HCP_toUint16(buffer);
+
 			m_waveformMain = new PRBSWaveform(0, min, max, seed);
+
 			break;
 		}
 	}
@@ -321,7 +356,9 @@ void Helicopter::handleSignalRotorTailFrame()
 
 			DRV_UART_read(&m_remotePc, buffer, 2);
 			uint32_t seed = HCP_toUint16(buffer);
+
 			m_waveformTail = new PRBSWaveform(0, min, max, seed);
+
 			break;
 		}
 	}
@@ -330,6 +367,20 @@ void Helicopter::handleSignalRotorTailFrame()
 void Helicopter::handleStartFrame()
 {
 	m_isRunning = true;
+
+	uint8_t buffer[5] = {0};
+	uint32_t byteswritten = 0;
+
+	if(f_open(&m_file, "SAMPLE1.TXT", FA_OPEN_ALWAYS | FA_WRITE) != FR_OK)
+		Error_Handler();
+
+	buffer[0] = 2;
+	f_write(&m_file, (uint8_t*)&buffer, 2, &byteswritten);
+
+	f_write(&m_file, (uint8_t*)&m_Tsim, sizeof(m_Tsim), &byteswritten);
+
+	f_write(&m_file, (uint8_t*)&m_Te, sizeof(m_Te), &byteswritten);
+
 	setSysTickTimer(m_Te);
 	enableSysTickHandler();
 }
@@ -344,9 +395,16 @@ void Helicopter::process()
 		float commandRotorTail = m_waveformTail->generate(m_currentTime)/100000000.f;
 		motorTailSetSpeed(commandRotorTail);
 
+		uint32_t byteswritten = 0;
+		f_write(&m_file, (uint8_t*)&commandRotorMain, sizeof(commandRotorMain), &byteswritten);
+		f_write(&m_file, (uint8_t*)&commandRotorTail, sizeof(commandRotorTail), &byteswritten);
+
 		m_currentTime++;
 		if(m_currentTime > m_Tsim)
+		{
 			stop();
+			m_isTimeToSendData = true;
+		}
 	}
 }
 

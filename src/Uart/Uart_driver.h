@@ -54,6 +54,7 @@ uint8_t DRV_UART_getc(DRV_UART_TypeDef *obj);
 void DRV_UART_read(DRV_UART_TypeDef *obj, uint8_t *buffer, size_t nbytes);
 void DRV_UART_putc(DRV_UART_TypeDef *obj, int c);
 void DRV_UART_puts(DRV_UART_TypeDef *obj, const char* str);
+void DRV_UART_write(DRV_UART_TypeDef *obj, uint8_t *buffer, size_t nbytes);
 void DRV_UART_printf(DRV_UART_TypeDef *obj, const char* str, ...);
 int DRV_UART_readable(DRV_UART_TypeDef *obj);
 int DRV_UART_writable(DRV_UART_TypeDef *obj);

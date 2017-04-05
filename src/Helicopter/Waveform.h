@@ -55,7 +55,7 @@ public:
 
 private:
 	uint32_t m_tstart;
-	PRBS m_prbs;
+	Prbs m_prbs;
 };
 
 #endif /* WAVEFORM_H_ */

@@ -9,12 +9,13 @@
 */
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f3xx_hal.h"
-#include "stm32f3xx.h"
+#include <stm32f3xx_hal.h>
+#include <stm32f3xx.h>
 #ifdef USE_RTOS_SYSTICK
 #include <cmsis_os.h>
 #endif
-#include "stm32f3xx_it.h"
+#include <stm32f3xx_it.h>
+#include <Error_handler/Error_handler.h>
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -26,6 +27,46 @@
 /******************************************************************************/
 /*            	  	    Processor Exceptions Handlers                         */
 /******************************************************************************/
+
+void NMI_Handler(void)
+{
+	Error_Handler();
+}
+
+void HardFault_Handler(void)
+{
+	Error_Handler();
+}
+
+void MemManage_Handler(void)
+{
+	Error_Handler();
+}
+
+void BusFault_Handler(void)
+{
+	Error_Handler();
+}
+
+void UsageFault_Handler(void)
+{
+	Error_Handler();
+}
+
+void SVC_Handler(void)
+{
+	Error_Handler();
+}
+
+void DebugMon_Handler(void)
+{
+	Error_Handler();
+}
+
+void PendSV_Handler(void)
+{
+	Error_Handler();
+}
 
 /**
   * @brief  This function handles SysTick Handler, but only if no RTOS defines it.

@@ -27,8 +27,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include <string.h>
-#include "SD/Sd_init.h"
-#include "SD/Sd_driver.h"
+#include "SDCard/Sd_init.h"
+#include "SDCard/Sd_driver.h"
 #include "FatFs/ff_gen_drv.h"
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/

@@ -15,10 +15,11 @@ enum HCP_FrameType
 {
 	FrameType_ManualRotorMain 	= 0x01,
 	FrameType_ManualRotorTail 	= 0x02,
+	FrameType_Start 			= 0x10,
 	FrameType_Initialization 	= 0x11,
 	FrameType_SignalRotorMain 	= 0x12,
 	FrameType_SignalRotorTail 	= 0x13,
-	FrameType_Start 			= 0x10,
+	FrameType_StartTransmission = 0x1E,
 	FrameType_Stop 				= 0xFF
 };
 

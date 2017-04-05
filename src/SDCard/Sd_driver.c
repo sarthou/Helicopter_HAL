@@ -87,9 +87,9 @@
 ------------------------------------------------------------------------------*/ 
 
 /* Includes ------------------------------------------------------------------*/
-#include "SD/Sd_driver.h"
-#include "SD/Sd_init.h"
-#include "SPI/Spi_driver.h"
+#include "SDCard/Sd_driver.h"
+#include "SDCard/Sd_init.h"
+#include "Spi/Spi_driver.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>

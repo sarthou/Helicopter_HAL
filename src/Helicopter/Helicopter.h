@@ -83,6 +83,7 @@ private:
 	Waveform* m_waveformTail;
 
 	bool m_isRunning;
+	bool m_isTimeToSendData;
 };
 
 #endif /* HELICOPTER_H_ */

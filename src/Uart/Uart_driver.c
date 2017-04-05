@@ -298,6 +298,12 @@ void DRV_UART_puts(DRV_UART_TypeDef *obj, const char* str)
 		DRV_UART_putc(obj, *str ++);
 }
 
+void DRV_UART_write(DRV_UART_TypeDef *obj, uint8_t *buffer, size_t nbytes)
+{
+	for(int i = 0 ; i < nbytes ; i++)
+		DRV_UART_putc(obj, buffer[i]);
+}
+
 void DRV_UART_printf(DRV_UART_TypeDef *obj, const char* str, ...)
 {
 #ifdef DRV_UART_USE_PRINTF

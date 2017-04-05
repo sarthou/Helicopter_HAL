@@ -77,8 +77,8 @@ typedef char TCHAR;
 
 typedef struct {
   union{
-	UINT	d32[_MAX_SS/4]; /* Force 32bits alignement */     
-	BYTE	d8[_MAX_SS];	/* Disk access window for Directory, FAT (and file data at tiny cfg) */  
+	UINT	d32[_MAX_SS/4]; /* Force 32bits alignement */
+	BYTE	d8[_MAX_SS];	/* Disk access window for Directory, FAT (and file data at tiny cfg) */
   }win;
 	BYTE	fs_type;		/* FAT sub-type (0:Not mounted) */
 	BYTE	drv;			/* Physical drive number */
@@ -118,7 +118,7 @@ typedef struct {
 typedef struct {
 #if !_FS_TINY
   union{  
-	UINT	d32[_MAX_SS/4]; /* Force 32bits alignement */     
+	UINT	d32[_MAX_SS/4]; /* Force 32bits alignement */
 	BYTE	d8[_MAX_SS];	/* File data read/write buffer */
   }buf;
 #endif
@@ -151,7 +151,7 @@ typedef struct {
 typedef struct {
 #if !_FS_TINY
   union{  
-            UINT     d32[_MAX_SS/4];  /* Force 32bits alignement */  
+            UINT     d32[_MAX_SS/4];  /* Force 32bits alignement */
             BYTE   d8[_MAX_SS];  /* File data read/write buffer */
   }buf;
 #endif   

@@ -1,7 +1,5 @@
-#include "Error_handler/Error_handler.h"
-#include "SD/Sd_driver.h"
-#include "SD/Sd_init.h"
 #include "SPI/Spi_driver.h"
+#include "SPI/Spi_init.h"
 
 #define NUCLEO_SPIx                               SPI1
 #define NUCLEO_SPIx_CLK_ENABLE()                  __HAL_RCC_SPI1_CLK_ENABLE()
@@ -19,30 +17,36 @@
 #define NUCLEO_SPIx_MISO_PIN                      GPIO_PIN_4
 #define NUCLEO_SPIx_MOSI_PIN                      GPIO_PIN_5
 
-#define NUCLEO_SPIx_TIMEOUT_MAX                   1000
-
-#define SD_CS_LOW()       HAL_GPIO_WritePin(SD_CS_GPIO_PORT, SD_CS_PIN, GPIO_PIN_RESET)
-#define SD_CS_HIGH()      HAL_GPIO_WritePin(SD_CS_GPIO_PORT, SD_CS_PIN, GPIO_PIN_SET)
-
-#define SD_CS_PIN                                 GPIO_PIN_4
-#define SD_CS_GPIO_PORT                           GPIOA
-#define SD_CS_GPIO_CLK_ENABLE()                 __HAL_RCC_GPIOA_CLK_ENABLE()
-#define SD_CS_GPIO_CLK_DISABLE()                __HAL_RCC_GPIOA_CLK_DISABLE()
-
-#define SD_DUMMY_BYTE            0xFF
-#define SD_NO_RESPONSE_EXPECTED  0x80
-
-void DRV_SD_MspInit(DRV_SD_HandleTypeDef *hsd)
+void HAL_SPI_MspInit(SPI_HandleTypeDef *hspi)
 {
-	UNUSED(hsd);
+	UNUSED(hspi);
 
 	GPIO_InitTypeDef  GPIO_InitStruct;
 
-	SD_CS_GPIO_CLK_ENABLE();
+	//// Configure the GPIOs ////
+	// Enable GPIO clock //
+	NUCLEO_SPIx_SCK_GPIO_CLK_ENABLE();
+	NUCLEO_SPIx_MISO_MOSI_GPIO_CLK_ENABLE();
 
-	GPIO_InitStruct.Pin = SD_CS_PIN;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	// Configure SPI SCK //
+	GPIO_InitStruct.Pin = NUCLEO_SPIx_SCK_PIN;
+	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Pull  = GPIO_PULLUP;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-	HAL_GPIO_Init(SD_CS_GPIO_PORT, &GPIO_InitStruct);
+	GPIO_InitStruct.Alternate = NUCLEO_SPIx_SCK_AF;
+	HAL_GPIO_Init(NUCLEO_SPIx_SCK_GPIO_PORT, &GPIO_InitStruct);
+
+	// Configure SPI MISO and MOSI //
+	GPIO_InitStruct.Pin = NUCLEO_SPIx_MOSI_PIN;
+	GPIO_InitStruct.Alternate = NUCLEO_SPIx_MISO_MOSI_AF;
+	GPIO_InitStruct.Pull  = GPIO_PULLDOWN;
+	HAL_GPIO_Init(NUCLEO_SPIx_MISO_MOSI_GPIO_PORT, &GPIO_InitStruct);
+
+	GPIO_InitStruct.Pin = NUCLEO_SPIx_MISO_PIN;
+	HAL_GPIO_Init(NUCLEO_SPIx_MISO_MOSI_GPIO_PORT, &GPIO_InitStruct);
+
+	//// Configure the SPI peripheral ////
+	// Enable SPI clock //
+	NUCLEO_SPIx_CLK_ENABLE();
 }
+

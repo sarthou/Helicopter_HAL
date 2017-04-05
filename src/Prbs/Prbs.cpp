@@ -1,20 +1,13 @@
-#include "prbs.h"
-#include "UART/Uart_driver.h"
+#include <Prbs/Prbs.h>
 
-#define BO 1
-#define NO 0
-#define ACTION 1
-#define NVALSBPA  511
-
-PRBS::PRBS(uint16_t min,uint16_t max,uint16_t seed)
+Prbs::Prbs(uint16_t min,uint16_t max,uint16_t seed)
 {
 	m_reg=seed;
 	m_max=max;
 	m_min=min;
-
 }
 
-uint16_t PRBS::nextValue()
+uint16_t Prbs::nextValue()
 {
 	uint16_t val,val4,val13,val15,val16;
 	val4=getMem(4);
@@ -40,12 +33,12 @@ uint16_t PRBS::nextValue()
 	*/
 }
 
-uint16_t PRBS::getMem(int index)
+uint16_t Prbs::getMem(int index)
 {
 	return ((m_reg>>(16-index))&0x1);
 }
 
-void PRBS::setMem(int index, uint16_t value)
+void Prbs::setMem(int index, uint16_t value)
 {
 	m_reg=(m_reg>>1)|(value<<(index-1));
 }
