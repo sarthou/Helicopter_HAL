@@ -9,6 +9,7 @@
 #define WAVEFORM_H_
 
 #include <stdint.h>
+#include <PRBS/prbs.h>
 
 enum WaveformType
 {
@@ -44,6 +45,17 @@ public:
 private:
 	uint32_t m_tstart;
 	uint32_t m_slopeFactor;
+};
+
+class PRBSWaveform : public Waveform
+{
+public:
+	PRBSWaveform(uint32_t tstart,uint16_t min, uint16_t max, uint16_t seed);
+	virtual uint32_t generate(uint32_t currentTime);
+
+private:
+	uint32_t m_tstart;
+	PRBS m_prbs;
 };
 
 #endif /* WAVEFORM_H_ */
