@@ -278,7 +278,7 @@ void Helicopter::handleSignalRotorMainFrame()
 
 			DRV_UART_read(&m_remotePc, buffer, 2);
 			uint32_t seed = HCP_toUint16(buffer);
-			//m_waveformMain = new PRBS(min, max, seed);
+			m_waveformMain = new PRBSWaveform(0, min, max, seed);
 			break;
 		}
 	}
@@ -321,7 +321,7 @@ void Helicopter::handleSignalRotorTailFrame()
 
 			DRV_UART_read(&m_remotePc, buffer, 2);
 			uint32_t seed = HCP_toUint16(buffer);
-			//m_waveformTail = new PRBS(min, max, seed);
+			m_waveformTail = new PRBSWaveform(0, min, max, seed);
 			break;
 		}
 	}
