@@ -50,7 +50,7 @@ private:
 class PRBSWaveform : public Waveform
 {
 public:
-	PRBSWaveform(uint32_t tstart,uint16_t min, uint16_t max, uint16_t seed);
+	PRBSWaveform(uint32_t tstart,uint32_t min, uint32_t max, uint16_t seed);
 	virtual uint32_t generate(uint32_t currentTime);
 
 private:

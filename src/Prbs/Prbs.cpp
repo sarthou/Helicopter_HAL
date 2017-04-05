@@ -1,13 +1,13 @@
 #include <Prbs/Prbs.h>
 
-Prbs::Prbs(uint16_t min,uint16_t max,uint16_t seed)
+Prbs::Prbs(uint32_t min,uint32_t max,uint16_t seed)
 {
 	m_reg=seed;
 	m_max=max;
 	m_min=min;
 }
 
-uint16_t Prbs::nextValue()
+uint32_t Prbs::nextValue()
 {
 	uint16_t val,val4,val13,val15,val16;
 	val4=getMem(4);

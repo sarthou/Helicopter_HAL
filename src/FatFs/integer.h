@@ -5,6 +5,8 @@
 #ifndef _FF_INTEGER
 #define _FF_INTEGER
 
+#include <stdint.h>
+
 #ifdef _WIN32	/* FatFs development platform */
 
 #include <windows.h>

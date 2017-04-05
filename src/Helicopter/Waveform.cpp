@@ -36,7 +36,7 @@ uint32_t RampWaveform::generate(uint32_t currentTime)
 		return 0;
 }
 
-PRBSWaveform::PRBSWaveform(uint32_t tstart, uint16_t min, uint16_t max, uint16_t seed) : m_tstart(tstart), m_prbs(min,max,seed)
+PRBSWaveform::PRBSWaveform(uint32_t tstart, uint32_t min, uint32_t max, uint16_t seed) : m_tstart(tstart), m_prbs(min,max,seed)
 {
 
 }
