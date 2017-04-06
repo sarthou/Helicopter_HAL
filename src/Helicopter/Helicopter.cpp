@@ -147,6 +147,10 @@ void Helicopter::run()
 				if(not m_isRunning)
 					handleSignalRotorTailFrame();
 				break;
+			case FrameType_SignalSensors:
+				if(not m_isRunning)
+					handleSignalSensorsFrame();
+				break;
 			case FrameType_Start:
 				if(not m_isRunning)
 					handleStartFrame();
@@ -364,6 +368,26 @@ void Helicopter::handleSignalRotorTailFrame()
 	}
 }
 
+void Helicopter::handleSignalSensorsFrame()
+{
+	uint8_t nbSensors = DRV_UART_getc(&m_remotePc);
+	sensors.nbSensors = nbSensors;
+	sensors.mainMotor = 0;
+	sensors.tailMotor = 0;
+	sensors.pitchPot = 0;
+	for(int i = 0; i < nbSensors; i++)
+	{
+		uint8_t sensorId = DRV_UART_getc(&m_remotePc);
+		switch(sensorId)
+		{
+		case 0x01: sensors.mainMotor = 1; break;
+		case 0x02: sensors.tailMotor = 1; break;
+		case 0x03: sensors.pitchPot = 1; break;
+		default : break;
+		}
+	}
+}
+
 void Helicopter::handleStartFrame()
 {
 	m_isRunning = true;
@@ -371,10 +395,10 @@ void Helicopter::handleStartFrame()
 	uint8_t buffer[5] = {0};
 	uint32_t byteswritten = 0;
 
-	if(f_open(&m_file, "SAMPLE1.TXT", FA_OPEN_ALWAYS | FA_WRITE) != FR_OK)
+	if(f_open(&m_file, "SAMPLE1.TXT", FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
 		Error_Handler();
 
-	buffer[0] = 2;
+	buffer[0] = sensors.nbSensors;
 	f_write(&m_file, (uint8_t*)&buffer, 2, &byteswritten);
 
 	f_write(&m_file, (uint8_t*)&m_Tsim, sizeof(m_Tsim), &byteswritten);
@@ -396,8 +420,10 @@ void Helicopter::process()
 		motorTailSetSpeed(commandRotorTail);
 
 		uint32_t byteswritten = 0;
-		f_write(&m_file, (uint8_t*)&commandRotorMain, sizeof(commandRotorMain), &byteswritten);
-		f_write(&m_file, (uint8_t*)&commandRotorTail, sizeof(commandRotorTail), &byteswritten);
+		if(sensors.mainMotor)
+			f_write(&m_file, (uint8_t*)&commandRotorMain, sizeof(commandRotorMain), &byteswritten);
+		if(sensors.tailMotor)
+			f_write(&m_file, (uint8_t*)&commandRotorTail, sizeof(commandRotorTail), &byteswritten);
 
 		m_currentTime++;
 		if(m_currentTime > m_Tsim)

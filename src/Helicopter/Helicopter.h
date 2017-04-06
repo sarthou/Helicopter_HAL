@@ -18,6 +18,13 @@
 #include <Uart/Uart_driver.h>
 #include <Uart/Uart_init.h>
 
+struct sensors_t
+{
+	uint8_t mainMotor;
+	uint8_t tailMotor;
+	uint8_t pitchPot;
+	uint8_t nbSensors;
+};
 
 class Helicopter
 {
@@ -57,6 +64,7 @@ private:
 	void handleInitializationFrame();
 	void handleSignalRotorMainFrame();
 	void handleSignalRotorTailFrame();
+	void handleSignalSensorsFrame();
 	void handleStartFrame();
 
 	void process();
@@ -81,6 +89,8 @@ private:
 
 	Waveform* m_waveformMain;
 	Waveform* m_waveformTail;
+
+	sensors_t sensors;
 
 	bool m_isRunning;
 	bool m_isTimeToSendData;
