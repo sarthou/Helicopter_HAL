@@ -31,7 +31,10 @@ RampWaveform::RampWaveform(uint32_t tstart, uint32_t slopeFactor) :
 uint32_t RampWaveform::generate(uint32_t currentTime)
 {
 	if(currentTime > m_tstart)
-		return uint32_t(m_slopeFactor)*currentTime;
+		if(uint32_t(m_slopeFactor)*(currentTime-m_tstart) <= 100000000)
+			return uint32_t(m_slopeFactor)*(currentTime-m_tstart);
+		else
+			return 100000000;
 	else
 		return 0;
 }
