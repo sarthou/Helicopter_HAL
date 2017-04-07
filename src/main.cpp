@@ -11,8 +11,6 @@
 
 #include <stm32f3xx.h>
 #include <Error_handler/Error_handler.h>
-#include <Pwm/Pwm_driver.h>
-#include <Pwm/Pwm_init.h>
 #include <Uart/Uart_driver.h>
 #include <Uart/Uart_init.h>
 #include <Helicopter/Helicopter.h>

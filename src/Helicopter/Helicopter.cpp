@@ -59,6 +59,10 @@ Helicopter::Helicopter() :
 
 	disableSysTickHandler();
 
+	POT2_init(&m_adc);
+
+	MPU9250_I2C_init(&m_i2c);
+
 	//SD card
 	uint32_t byteswritten;
 
@@ -424,6 +428,11 @@ void Helicopter::process()
 			f_write(&m_file, (uint8_t*)&commandRotorMain, sizeof(commandRotorMain), &byteswritten);
 		if(sensors.tailMotor)
 			f_write(&m_file, (uint8_t*)&commandRotorTail, sizeof(commandRotorTail), &byteswritten);
+		if(sensors.pitchPot)
+		{
+			float pitchPot = DRV_ADC_getValue(&m_adc);
+			f_write(&m_file, (uint8_t*)&pitchPot, sizeof(pitchPot), &byteswritten);
+		}
 
 		m_currentTime++;
 		if(m_currentTime > m_Tsim)

@@ -18,6 +18,12 @@
 #include <Uart/Uart_driver.h>
 #include <Uart/Uart_init.h>
 
+#include <ADC/Adc_driver.h>
+#include <ADC/Adc_init.h>
+
+#include <I2C/I2c_driver.h>
+#include <I2C/I2c_init.h>
+
 struct sensors_t
 {
 	uint8_t mainMotor;
@@ -76,8 +82,10 @@ private:
 	//AnalogIn m_adc2;
 	//AnalogOut m_dac1;
 	//AnalogOut m_dac2;
-	//I2C_HandleTypeDef m_i2c;
+
+	I2C_HandleTypeDef m_i2c;
 	DRV_UART_TypeDef m_remotePc;
+	ADC_HandleTypeDef m_adc;
 
 	FATFS m_SDFatFs;
 	FIL m_file;
