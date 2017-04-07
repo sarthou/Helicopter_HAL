@@ -34,5 +34,5 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
 
 void MPU9250_I2C_init(I2C_HandleTypeDef* hi2c)
 {
-	DRV_I2C_init(hi2c, 1000, 0x55, 7);
+	DRV_I2C_init(hi2c, 750, 0xD0, 7);
 }

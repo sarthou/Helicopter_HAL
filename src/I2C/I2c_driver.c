@@ -1,7 +1,7 @@
 #include "I2c_driver.h"
 #include "../Error_handler/Error_handler.h"
 
-#define I2C_TIMING_1M        0x00400B27
+#define I2C_TIMING_750K        0x00400B27
 #define I2C_TIMING_500K      0x00400B67
 #define I2C_TIMING_250K      0x00400CE6
 
@@ -13,10 +13,10 @@ void DRV_I2C_init(I2C_HandleTypeDef* I2cHandle, unsigned int Freq, uint32_t addr
 	I2cHandle->Instance             = I2C1;
 	switch(Freq)
 	{
-	case 1000: I2cHandle->Init.Timing = I2C_TIMING_1M; break;
+	case 750: I2cHandle->Init.Timing = I2C_TIMING_750K; break;
 	case 500: I2cHandle->Init.Timing = I2C_TIMING_500K; break;
 	case 250: I2cHandle->Init.Timing = I2C_TIMING_250K; break;
-	default: I2cHandle->Init.Timing = I2C_TIMING_1M; break;
+	default: I2cHandle->Init.Timing = I2C_TIMING_250K; break;
 	}
 	I2cHandle->Init.OwnAddress1     = m_addr;
 	if(nb_addr_bit == 10)
@@ -50,4 +50,39 @@ void DRV_I2C_read(I2C_HandleTypeDef* I2cHandle, uint8_t* aRxBuffer, uint16_t siz
 		if (HAL_I2C_GetError(I2cHandle) != HAL_I2C_ERROR_AF)
 			Error_Handler();
 	}
+}
+
+void DRV_I2C_write_byte(I2C_HandleTypeDef* I2cHandle, uint8_t regAddr, uint8_t data)
+{
+	uint8_t aTxBuffer[2];
+	aTxBuffer[0] = regAddr;
+	aTxBuffer[1] = data;
+	DRV_I2C_write(I2cHandle, aTxBuffer, 2);
+}
+
+void DRV_I2C_write_word(I2C_HandleTypeDef* I2cHandle, uint8_t regAddr, uint16_t data)
+{
+	uint8_t aTxBuffer[3];
+	aTxBuffer[0] = regAddr;
+	aTxBuffer[1] = data;
+	aTxBuffer[2] = (data >> 8);
+	DRV_I2C_write(I2cHandle, aTxBuffer, 3);
+}
+
+uint8_t DRV_I2C_read_byte(I2C_HandleTypeDef* I2cHandle, uint8_t regAddr)
+{
+	uint8_t aTxBuffer[1];
+	aTxBuffer[0] = regAddr;
+	DRV_I2C_write(I2cHandle, aTxBuffer, 1);
+	DRV_I2C_read(I2cHandle, aTxBuffer, 1);
+	return aTxBuffer[0];
+}
+
+uint16_t DRV_I2C_read_word(I2C_HandleTypeDef* I2cHandle, uint8_t regAddr)
+{
+	uint8_t aTxBuffer[2];
+	aTxBuffer[0] = regAddr;
+	DRV_I2C_write(I2cHandle, aTxBuffer, 1);
+	DRV_I2C_read(I2cHandle, aTxBuffer, 2);
+	return aTxBuffer[0] & (aTxBuffer[1] << 8);
 }
