@@ -277,323 +277,323 @@ public:
         writeRegister(m_i2c,ZA_OFFSET_L,(readRegister(m_i2c,ZA_OFFSET_L)&~(0x1))|(data<<1));
     }
 
-uint8_t MPU_getSampleRateDivider()
-{
-    return readRegister(m_i2c,SMPLRT_DIV);
-}
-
-void MPU_setSampleRateDivider (uint8_t div)
-{
-    writeRegister(m_i2c,SMPLRT_DIV,div);
-}
-
-    void MPU_setFifoMode(uint8_t fifo_mode)
-    {
-        //fifo_mode = 0 or 1
-        writeRegister(m_i2c,CONFIG,(readRegister(m_i2c,CONFIG)&~(0x40))|(fifo_mode<<6));
-    }
-    void MPU_setFsyncSampled(uint8_t ext_sync_set)
-    {
-        writeRegister(m_i2c,CONFIG,(readRegister(m_i2c,CONFIG)&~(0x38))|(ext_sync_set<<3));
-    }
-
-enum GyroFullScale MPU_getGyroFullScale()
-{
-	uint8_t data=(readRegister(m_i2c,GYRO_CONFIG)&0x18);
-	enum GyroFullScale fs;
-	switch (data)
+	uint8_t MPU_getSampleRateDivider()
 	{
-	case 0:
-		fs=fs_250;
-		break;
-	case 1:
-		fs=fs_500;
-		break;
-	case 2:
-		fs=fs_1000;
-		break;
-	case 3:
-		fs=fs_2000;
-		break;
+		return readRegister(m_i2c,SMPLRT_DIV);
 	}
-    return fs;
-}
 
-void MPU_setGyroFullScale(GyroFullScale fs)
-{
-    writeRegister(m_i2c,GYRO_CONFIG,(readRegister(m_i2c,GYRO_CONFIG)&~(0x18))|(fs<<3));
-}
+	void MPU_setSampleRateDivider (uint8_t div)
+	{
+		writeRegister(m_i2c,SMPLRT_DIV,div);
+	}
 
-enum GyroBandwith MPU_getGyroBandwith()
-{
-    uint8_t fChoice_b=(readRegister(m_i2c,GYRO_CONFIG)&0x3);
-    uint8_t dlpf=(readRegister(m_i2c,CONFIG)&0x7);
-    enum GyroBandwith res;
-    if (fChoice_b==2)
-    {
-        res=bw_3600;
-    }
-    else if (fChoice_b>0)
-    {
-        res=bw_8800;
-    }
-    else
-    {
-        res=(enum GyroBandwith) dlpf;
-    }
-    return res;
-}
-void MPU_setGyroBandwith(GyroBandwith bw, bool dlpf_on)
-    {
-        if (dlpf_on==false)
-        {
-            if (bw==8800)
-            {
-                writeRegister(m_i2c,GYRO_CONFIG,readRegister(m_i2c,GYRO_CONFIG)|(0x1));
-            }
-            else
-            {
-                writeRegister(m_i2c,GYRO_CONFIG,(readRegister(m_i2c,GYRO_CONFIG)&~(0x3))|(0x2));
-            }
-        }
-        else
-        {
-            writeRegister(m_i2c,CONFIG,(readRegister(m_i2c,CONFIG)&~(0x3))|bw);
-        }
-    }
+	void MPU_setFifoMode(uint8_t fifo_mode)
+	{
+		//fifo_mode = 0 or 1
+		writeRegister(m_i2c,CONFIG,(readRegister(m_i2c,CONFIG)&~(0x40))|(fifo_mode<<6));
+	}
+	void MPU_setFsyncSampled(uint8_t ext_sync_set)
+	{
+		writeRegister(m_i2c,CONFIG,(readRegister(m_i2c,CONFIG)&~(0x38))|(ext_sync_set<<3));
+	}
 
-enum AccelFullScale MPU_getAccelFullScale()
-{
-    return (enum AccelFullScale)(readRegister(m_i2c,ACCEL_CONFIG)&0x18);
-}
-void MPU_setAccelFullScale(AccelFullScale fs)
-{
-    writeRegister(m_i2c,ACCEL_CONFIG,(readRegister(m_i2c,ACCEL_CONFIG)&~(0x18))|(fs<<3));
-}
+	GyroFullScale MPU_getGyroFullScale()
+	{
+		uint8_t data=(readRegister(m_i2c,GYRO_CONFIG)&0x18);
+		GyroFullScale fs;
+		switch (data)
+		{
+		case 0:
+			fs=fs_250;
+			break;
+		case 1:
+			fs=fs_500;
+			break;
+		case 2:
+			fs=fs_1000;
+			break;
+		case 3:
+			fs=fs_2000;
+			break;
+		}
+		return fs;
+	}
 
-enum AccelBandwith MPU_getAccelBandwith()
-{
-    uint8_t fChoice_b = (readRegister(m_i2c,ACCEL_CONFIG2)&0x8);
-    uint16_t dlpf = (readRegister(m_i2c,ACCEL_CONFIG2)&0x7);
-    enum AccelBandwith res;
-    if (fChoice_b==1)
-    {
-        res=bw_1_046;
-    }
-    else
-    {
-        res=(enum AccelBandwith) dlpf;
-    }
-    return res;
-}
+	void MPU_setGyroFullScale(GyroFullScale fs)
+	{
+		writeRegister(m_i2c,GYRO_CONFIG,(readRegister(m_i2c,GYRO_CONFIG)&~(0x18))|(fs<<3));
+	}
 
-void MPU_setAccelBandwith(AccelBandwith bw, bool dlpf_on)
-{
-    if ((dlpf_on==false)||(bw==8))
-    {
-        //f_choice_b=1
-        writeRegister(m_i2c,ACCEL_CONFIG2,readRegister(m_i2c,ACCEL_CONFIG2)|(1<<3));
-    }
-    else
-    {
-        //f_choice_b=0
-        writeRegister(m_i2c,ACCEL_CONFIG2,readRegister(m_i2c,ACCEL_CONFIG2)&~(1<<3));
-        writeRegister(m_i2c,ACCEL_CONFIG2,(readRegister(m_i2c,ACCEL_CONFIG2)&~(0x7))|bw);
-    }
-}
+	GyroBandwith MPU_getGyroBandwith()
+	{
+		uint8_t fChoice_b=(readRegister(m_i2c,GYRO_CONFIG)&0x3);
+		uint8_t dlpf=(readRegister(m_i2c,CONFIG)&0x7);
+		GyroBandwith res;
+		if (fChoice_b==2)
+		{
+			res=bw_3600;
+		}
+		else if (fChoice_b>0)
+		{
+			res=bw_8800;
+		}
+		else
+		{
+			res=(GyroBandwith) dlpf;
+		}
+		return res;
+	}
+	void MPU_setGyroBandwith(GyroBandwith bw, bool dlpf_on)
+	{
+		if (dlpf_on==false)
+		{
+			if (bw==8800)
+			{
+				writeRegister(m_i2c,GYRO_CONFIG,readRegister(m_i2c,GYRO_CONFIG)|(0x1));
+			}
+			else
+			{
+				writeRegister(m_i2c,GYRO_CONFIG,(readRegister(m_i2c,GYRO_CONFIG)&~(0x3))|(0x2));
+			}
+		}
+		else
+		{
+			writeRegister(m_i2c,CONFIG,(readRegister(m_i2c,CONFIG)&~(0x3))|bw);
+		}
+	}
 
-uint8_t MPU_getINTactl()
-{
-    return (readRegister(m_i2c,INT_PIN_CFG)&0x80);
-}
+	AccelFullScale MPU_getAccelFullScale()
+	{
+		return (AccelFullScale)(readRegister(m_i2c,ACCEL_CONFIG)&0x18);
+	}
+	void MPU_setAccelFullScale(AccelFullScale fs)
+	{
+		writeRegister(m_i2c,ACCEL_CONFIG,(readRegister(m_i2c,ACCEL_CONFIG)&~(0x18))|(fs<<3));
+	}
 
-void MPU_setINTactl(uint8_t actl)
-{
-    //actl=1 => active low
-    writeRegister(m_i2c,INT_PIN_CFG,(readRegister(m_i2c,INT_PIN_CFG)&~(0x80))|(actl<<7));
-}
+	AccelBandwith MPU_getAccelBandwith()
+	{
+		uint8_t fChoice_b = (readRegister(m_i2c,ACCEL_CONFIG2)&0x8);
+		uint16_t dlpf = (readRegister(m_i2c,ACCEL_CONFIG2)&0x7);
+		AccelBandwith res;
+		if (fChoice_b==1)
+		{
+			res=bw_1_046;
+		}
+		else
+		{
+			res=(AccelBandwith) dlpf;
+		}
+		return res;
+	}
 
-uint8_t MPU_getINTopendrain()
-{
-    return (readRegister(m_i2c,INT_PIN_CFG)&0x40);
-}
+	void MPU_setAccelBandwith(AccelBandwith bw, bool dlpf_on)
+	{
+		if ((dlpf_on==false)||(bw==8))
+		{
+			//f_choice_b=1
+			writeRegister(m_i2c,ACCEL_CONFIG2,readRegister(m_i2c,ACCEL_CONFIG2)|(1<<3));
+		}
+		else
+		{
+			//f_choice_b=0
+			writeRegister(m_i2c,ACCEL_CONFIG2,readRegister(m_i2c,ACCEL_CONFIG2)&~(1<<3));
+			writeRegister(m_i2c,ACCEL_CONFIG2,(readRegister(m_i2c,ACCEL_CONFIG2)&~(0x7))|bw);
+		}
+	}
 
-void MPU_setINTopendrain(uint8_t opendrain)
-{
-    writeRegister(m_i2c,INT_PIN_CFG,(readRegister(m_i2c,INT_PIN_CFG)&~(0x40))|(opendrain<<6));
-}
+	uint8_t MPU_getINTactl()
+	{
+		return (readRegister(m_i2c,INT_PIN_CFG)&0x80);
+	}
 
-uint8_t MPU_getINTlatchIntEn()
-{
-    return (readRegister(m_i2c,INT_PIN_CFG)&0x20);
-}
+	void MPU_setINTactl(uint8_t actl)
+	{
+		//actl=1 => active low
+		writeRegister(m_i2c,INT_PIN_CFG,(readRegister(m_i2c,INT_PIN_CFG)&~(0x80))|(actl<<7));
+	}
 
-void MPU_setINTlatchIntEn(uint8_t levelHeld)
-{
-    writeRegister(m_i2c,INT_PIN_CFG,(readRegister(m_i2c,INT_PIN_CFG)&~(0x20))|(levelHeld<<5));
-}
+	uint8_t MPU_getINTopendrain()
+	{
+		return (readRegister(m_i2c,INT_PIN_CFG)&0x40);
+	}
 
-uint8_t MPU_getINTanyrd()
-{
-    return (readRegister(m_i2c,INT_PIN_CFG)&0x10);
-}
+	void MPU_setINTopendrain(uint8_t opendrain)
+	{
+		writeRegister(m_i2c,INT_PIN_CFG,(readRegister(m_i2c,INT_PIN_CFG)&~(0x40))|(opendrain<<6));
+	}
 
-void MPU_setINTanyrd(uint8_t anyread)
-{
-    writeRegister(m_i2c,INT_PIN_CFG,(readRegister(m_i2c,INT_PIN_CFG)&~(0x10))|(anyread<<4));
-}
+	uint8_t MPU_getINTlatchIntEn()
+	{
+		return (readRegister(m_i2c,INT_PIN_CFG)&0x20);
+	}
 
-uint8_t MPU_getITRawRdyEn()
-{
-    return (readRegister(m_i2c,INT_ENABLE)&0x1);
-}
+	void MPU_setINTlatchIntEn(uint8_t levelHeld)
+	{
+		writeRegister(m_i2c,INT_PIN_CFG,(readRegister(m_i2c,INT_PIN_CFG)&~(0x20))|(levelHeld<<5));
+	}
 
-void MPU_setITRawRdyEn(uint8_t enable)
-{
-    writeRegister(m_i2c,INT_ENABLE,(readRegister(m_i2c,INT_ENABLE)&~(0x1))|enable);
-}
+	uint8_t MPU_getINTanyrd()
+	{
+		return (readRegister(m_i2c,INT_PIN_CFG)&0x10);
+	}
 
-uint8_t MPU_getITStatusRawDataRdy()
-{
-    return (readRegister(m_i2c,INT_STATUS)&0x1);
-}
+	void MPU_setINTanyrd(uint8_t anyread)
+	{
+		writeRegister(m_i2c,INT_PIN_CFG,(readRegister(m_i2c,INT_PIN_CFG)&~(0x10))|(anyread<<4));
+	}
 
-uint8_t MPU_getWaitForEs()
-{
-    return (readRegister(m_i2c,I2C_MST_CTRL)&0x40);
-}
+	uint8_t MPU_getITRawRdyEn()
+	{
+		return (readRegister(m_i2c,INT_ENABLE)&0x1);
+	}
 
-void MPU_setWaitForEs(uint8_t delay)
-{
-    writeRegister(m_i2c,I2C_MST_CTRL,(readRegister(m_i2c,I2C_MST_CTRL)&~(0x40))|(delay<<6));
-}
+	void MPU_setITRawRdyEn(uint8_t enable)
+	{
+		writeRegister(m_i2c,INT_ENABLE,(readRegister(m_i2c,INT_ENABLE)&~(0x1))|enable);
+	}
 
-uint8_t MPU_getSignalPathGyroReset()
-{
-    return (readRegister(m_i2c,SIGNAL_PATH_RESET)&0x4);
-}
+	uint8_t MPU_getITStatusRawDataRdy()
+	{
+		return (readRegister(m_i2c,INT_STATUS)&0x1);
+	}
 
-void MPU_setSignalPathGyroReset(uint8_t reset)
-{
-    writeRegister(m_i2c,SIGNAL_PATH_RESET,(readRegister(m_i2c,SIGNAL_PATH_RESET)&~(0x4))|(reset<<2));
-}
+	uint8_t MPU_getWaitForEs()
+	{
+		return (readRegister(m_i2c,I2C_MST_CTRL)&0x40);
+	}
 
-uint8_t MPU_getSignalPathAcceleroReset()
-{
-    return (readRegister(m_i2c,SIGNAL_PATH_RESET)&0x2);
-}
+	void MPU_setWaitForEs(uint8_t delay)
+	{
+		writeRegister(m_i2c,I2C_MST_CTRL,(readRegister(m_i2c,I2C_MST_CTRL)&~(0x40))|(delay<<6));
+	}
 
-void MPU_setSignalPathAcceleroReset(uint8_t reset)
-{
-    writeRegister(m_i2c,SIGNAL_PATH_RESET,(readRegister(m_i2c,SIGNAL_PATH_RESET)&~(0x2))|(reset<<1));
-}
+	uint8_t MPU_getSignalPathGyroReset()
+	{
+		return (readRegister(m_i2c,SIGNAL_PATH_RESET)&0x4);
+	}
 
-uint8_t MPU_getUSRCTRLsigCondRst()
-{
-    return (readRegister(m_i2c,USER_CTRL)&0x1);
-}
+	void MPU_setSignalPathGyroReset(uint8_t reset)
+	{
+		writeRegister(m_i2c,SIGNAL_PATH_RESET,(readRegister(m_i2c,SIGNAL_PATH_RESET)&~(0x4))|(reset<<2));
+	}
 
-void MPU_setUSRCTRLsigCondRst(uint8_t reset)
-{
-    writeRegister(m_i2c,USER_CTRL,(readRegister(m_i2c,USER_CTRL)&~(0x1))|reset);
-}
+	uint8_t MPU_getSignalPathAcceleroReset()
+	{
+		return (readRegister(m_i2c,SIGNAL_PATH_RESET)&0x2);
+	}
 
-void MPU_ResetDefault()
-{
-    writeRegister(m_i2c,PWR_MGMT_1,readRegister(m_i2c,PWR_MGMT_1)|0x80);
-}
+	void MPU_setSignalPathAcceleroReset(uint8_t reset)
+	{
+		writeRegister(m_i2c,SIGNAL_PATH_RESET,(readRegister(m_i2c,SIGNAL_PATH_RESET)&~(0x2))|(reset<<1));
+	}
 
-uint8_t MPU_getSleepMode()
-{
-    return (readRegister(m_i2c,PWR_MGMT_1)&0x40);
-}
+	uint8_t MPU_getUSRCTRLsigCondRst()
+	{
+		return (readRegister(m_i2c,USER_CTRL)&0x1);
+	}
 
-void MPU_setSleepMode(uint8_t sleep)
-{
-    writeRegister(m_i2c,PWR_MGMT_1,(readRegister(m_i2c,PWR_MGMT_1)&~(0x40))|(sleep<<6));
-}
+	void MPU_setUSRCTRLsigCondRst(uint8_t reset)
+	{
+		writeRegister(m_i2c,USER_CTRL,(readRegister(m_i2c,USER_CTRL)&~(0x1))|reset);
+	}
 
-uint8_t MPU_getCycleMode()
-{
-    return (readRegister(m_i2c,PWR_MGMT_1)&0x20);
-}
+	void MPU_ResetDefault()
+	{
+		writeRegister(m_i2c,PWR_MGMT_1,readRegister(m_i2c,PWR_MGMT_1)|0x80);
+	}
 
-void MPU_setCycleMode(uint8_t cycle)
-{
-    writeRegister(m_i2c,PWR_MGMT_1,(readRegister(m_i2c,PWR_MGMT_1)&~(0x20))|(cycle<<5));
-}
+	uint8_t MPU_getSleepMode()
+	{
+		return (readRegister(m_i2c,PWR_MGMT_1)&0x40);
+	}
 
-uint8_t MPU_getGyroStandby()
-{
-    return (readRegister(m_i2c,PWR_MGMT_1)&0x10);
-}
+	void MPU_setSleepMode(uint8_t sleep)
+	{
+		writeRegister(m_i2c,PWR_MGMT_1,(readRegister(m_i2c,PWR_MGMT_1)&~(0x40))|(sleep<<6));
+	}
 
-void MPU_setGyroStandby(uint8_t standby)
-{
-    writeRegister(m_i2c,PWR_MGMT_1,(readRegister(m_i2c,PWR_MGMT_1)&~(0x10))|(standby<<4));
-}
+	uint8_t MPU_getCycleMode()
+	{
+		return (readRegister(m_i2c,PWR_MGMT_1)&0x20);
+	}
 
-uint8_t MPU_getClkSel()
-{
-    return (readRegister(m_i2c,PWR_MGMT_1)&0x7);
-}
+	void MPU_setCycleMode(uint8_t cycle)
+	{
+		writeRegister(m_i2c,PWR_MGMT_1,(readRegister(m_i2c,PWR_MGMT_1)&~(0x20))|(cycle<<5));
+	}
 
-void MPU_setClkSel(uint8_t code)
-{
-    writeRegister(m_i2c,PWR_MGMT_1,(readRegister(m_i2c,PWR_MGMT_1)&~(0x7))|code);
-}
+	uint8_t MPU_getGyroStandby()
+	{
+		return (readRegister(m_i2c,PWR_MGMT_1)&0x10);
+	}
 
-uint8_t MPU_getWhoAmI()
-{
-    return readRegister(m_i2c,WHO_AM_I);
-}
+	void MPU_setGyroStandby(uint8_t standby)
+	{
+		writeRegister(m_i2c,PWR_MGMT_1,(readRegister(m_i2c,PWR_MGMT_1)&~(0x10))|(standby<<4));
+	}
 
-uint16_t MPU_getAccelX()
-{
-    uint16_t dataL=readRegister(m_i2c,ACCEL_XOUT_L);
-    uint16_t dataH=readRegister(m_i2c,ACCEL_XOUT_H);
-    return ((dataH<<8)|dataL);
-}
+	uint8_t MPU_getClkSel()
+	{
+		return (readRegister(m_i2c,PWR_MGMT_1)&0x7);
+	}
 
-uint16_t MPU_getAccelY()
-{
-    uint16_t dataL=readRegister(m_i2c,ACCEL_YOUT_L);
-    uint16_t dataH=readRegister(m_i2c,ACCEL_YOUT_H);
-    return ((dataH<<8)|dataL);
-}
+	void MPU_setClkSel(uint8_t code)
+	{
+		writeRegister(m_i2c,PWR_MGMT_1,(readRegister(m_i2c,PWR_MGMT_1)&~(0x7))|code);
+	}
 
-uint16_t MPU_getAccelZ()
-{
-    uint16_t dataL=readRegister(m_i2c,ACCEL_ZOUT_L);
-    uint16_t dataH=readRegister(m_i2c,ACCEL_ZOUT_H);
-    return ((dataH<<8)|dataL);
-}
+	uint8_t MPU_getWhoAmI()
+	{
+		return readRegister(m_i2c,WHO_AM_I);
+	}
 
-uint16_t MPU_getGyroX()
-{
-    uint16_t dataL=readRegister(m_i2c,GYRO_XOUT_L);
-    uint16_t dataH=readRegister(m_i2c,GYRO_XOUT_H);
-    return ((dataH<<8)|dataL);
-}
+	uint16_t MPU_getAccelX()
+	{
+		uint16_t dataL=readRegister(m_i2c,ACCEL_XOUT_L);
+		uint16_t dataH=readRegister(m_i2c,ACCEL_XOUT_H);
+		return ((dataH<<8)|dataL);
+	}
 
-uint16_t MPU_getGyroY()
-{
-    uint16_t dataL=readRegister(m_i2c,GYRO_YOUT_L);
-    uint16_t dataH=readRegister(m_i2c,GYRO_YOUT_H);
-    return ((dataH<<8)|dataL);
-}
+	uint16_t MPU_getAccelY()
+	{
+		uint16_t dataL=readRegister(m_i2c,ACCEL_YOUT_L);
+		uint16_t dataH=readRegister(m_i2c,ACCEL_YOUT_H);
+		return ((dataH<<8)|dataL);
+	}
 
-uint16_t MPU_getGyroZ()
-{
-    uint16_t dataL=readRegister(m_i2c,GYRO_ZOUT_L);
-    uint16_t dataH=readRegister(m_i2c,GYRO_ZOUT_H);
-    return ((dataH<<8)|dataL);
-}
+	uint16_t MPU_getAccelZ()
+	{
+		uint16_t dataL=readRegister(m_i2c,ACCEL_ZOUT_L);
+		uint16_t dataH=readRegister(m_i2c,ACCEL_ZOUT_H);
+		return ((dataH<<8)|dataL);
+	}
 
-void MPU_disableAxis(Axis ax)
-{
-    writeRegister(m_i2c,PWR_MGMT_2,readRegister(m_i2c,PWR_MGMT_2)|(1<<ax));
-}
+	uint16_t MPU_getGyroX()
+	{
+		uint16_t dataL=readRegister(m_i2c,GYRO_XOUT_L);
+		uint16_t dataH=readRegister(m_i2c,GYRO_XOUT_H);
+		return ((dataH<<8)|dataL);
+	}
+
+	uint16_t MPU_getGyroY()
+	{
+		uint16_t dataL=readRegister(m_i2c,GYRO_YOUT_L);
+		uint16_t dataH=readRegister(m_i2c,GYRO_YOUT_H);
+		return ((dataH<<8)|dataL);
+	}
+
+	uint16_t MPU_getGyroZ()
+	{
+		uint16_t dataL=readRegister(m_i2c,GYRO_ZOUT_L);
+		uint16_t dataH=readRegister(m_i2c,GYRO_ZOUT_H);
+		return ((dataH<<8)|dataL);
+	}
+
+	void MPU_disableAxis(Axis ax)
+	{
+		writeRegister(m_i2c,PWR_MGMT_2,readRegister(m_i2c,PWR_MGMT_2)|(1<<ax));
+	}
 
 private:
     I2C_HandleTypeDef* m_i2c;
