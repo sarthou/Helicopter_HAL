@@ -446,6 +446,19 @@ void Helicopter::process()
 			float pitchPot = DRV_ADC_getValue(&m_adc);
 			f_write(&m_file, (uint8_t*)&pitchPot, sizeof(pitchPot), &byteswritten);
 		}
+		if(sensors.acceleroX)
+			f_write(&m_file, (uint8_t*)&(MPU_values.acceleroX), sizeof(MPU_values.acceleroX), &byteswritten);
+		if(sensors.acceleroY)
+			f_write(&m_file, (uint8_t*)&(MPU_values.acceleroY), sizeof(MPU_values.acceleroY), &byteswritten);
+		if(sensors.acceleroZ)
+			f_write(&m_file, (uint8_t*)&(MPU_values.acceleroZ), sizeof(MPU_values.acceleroZ), &byteswritten);
+		if(sensors.gyroX)
+			f_write(&m_file, (uint8_t*)&(MPU_values.gyroX), sizeof(MPU_values.gyroX), &byteswritten);
+		if(sensors.gyroY)
+			f_write(&m_file, (uint8_t*)&(MPU_values.gyroY), sizeof(MPU_values.gyroY), &byteswritten);
+		if(sensors.gyroZ)
+			f_write(&m_file, (uint8_t*)&(MPU_values.gyroZ), sizeof(MPU_values.gyroZ), &byteswritten);
+
 
 		m_currentTime++;
 		if(m_currentTime > m_Tsim)

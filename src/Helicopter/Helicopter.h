@@ -42,6 +42,17 @@ struct sensors_t
 	uint8_t nbSensors;
 };
 
+struct MPU_values_t
+{
+	uint16_t acceleroX;
+	uint16_t acceleroY;
+	uint16_t acceleroZ;
+
+	uint16_t gyroX;
+	uint16_t gyroY;
+	uint16_t gyroZ;
+};
+
 class Helicopter
 {
 public:
@@ -109,6 +120,7 @@ private:
 	Waveform* m_waveformTail;
 
 	sensors_t sensors;
+	MPU_values_t MPU_values;
 
 	bool m_isRunning;
 	bool m_isTimeToSendData;
