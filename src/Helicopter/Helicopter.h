@@ -29,6 +29,16 @@ struct sensors_t
 	uint8_t mainMotor;
 	uint8_t tailMotor;
 	uint8_t pitchPot;
+
+	uint8_t acceleroX;
+	uint8_t acceleroY;
+	uint8_t acceleroZ;
+
+	uint8_t gyroX;
+	uint8_t gyroY;
+	uint8_t gyroZ;
+
+
 	uint8_t nbSensors;
 };
 

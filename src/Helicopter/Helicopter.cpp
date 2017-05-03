@@ -379,6 +379,13 @@ void Helicopter::handleSignalSensorsFrame()
 	sensors.mainMotor = 0;
 	sensors.tailMotor = 0;
 	sensors.pitchPot = 0;
+	sensors.acceleroX = 0;
+	sensors.acceleroY = 0;
+	sensors.acceleroZ = 0;
+	sensors.gyroX = 0;
+	sensors.gyroY = 0;
+	sensors.gyroZ = 0;
+
 	for(int i = 0; i < nbSensors; i++)
 	{
 		uint8_t sensorId = DRV_UART_getc(&m_remotePc);
@@ -387,6 +394,12 @@ void Helicopter::handleSignalSensorsFrame()
 		case 0x01: sensors.mainMotor = 1; break;
 		case 0x02: sensors.tailMotor = 1; break;
 		case 0x03: sensors.pitchPot = 1; break;
+		case 0x04: sensors.acceleroX = 1; break;
+		case 0x05: sensors.acceleroY = 1; break;
+		case 0x06: sensors.acceleroZ = 1; break;
+		case 0x07: sensors.gyroX = 1; break;
+		case 0x08: sensors.gyroY = 1; break;
+		case 0x09: sensors.gyroZ = 1; break;
 		default : break;
 		}
 	}
