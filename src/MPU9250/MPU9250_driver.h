@@ -78,6 +78,10 @@ public:
 	uint16_t MPU_getGyroY();
 	uint16_t MPU_getGyroZ();
 
+	float MPU_getGyroX_f();
+	float MPU_getGyroY_f();
+	float MPU_getGyroZ_f();
+
 
 	// ACCELEROMETRE
 	void MPU_setAccelOffset();
@@ -93,6 +97,10 @@ public:
 	uint16_t MPU_getAccelX();
 	uint16_t MPU_getAccelY();
 	uint16_t MPU_getAccelZ();
+
+	float MPU_getAccelX_f();
+	float MPU_getAccelY_f();
+	float MPU_getAccelZ_f();
 
 
 	// CONFIGURATION Sample Rate

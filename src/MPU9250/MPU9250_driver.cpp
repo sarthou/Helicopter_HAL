@@ -345,6 +345,81 @@ uint16_t MPU9250_driver::MPU_getGyroZ()
 }
 
 
+float MPU9250_driver::MPU_getGyroX_f()
+{
+	int16_t data=MPU_getGyroX();
+	GyroFullScale fs=MPU_getGyroFullScale();
+	int16_t max;
+	switch (fs)
+	{
+	case 0:
+		max=250;
+		break;
+	case 1:
+		max=500;
+		break;
+	case 2:
+		max=1000;
+		break;
+	case 3:
+		max=2000;
+		break;
+	}
+
+	float gyroX=(float)(data*max/32767);
+	return gyroX;
+}
+
+float MPU9250_driver::MPU_getGyroY_f()
+{
+	int16_t data=MPU_getGyroY();
+	GyroFullScale fs=MPU_getGyroFullScale();
+	int16_t max;
+	switch (fs)
+	{
+	case 0:
+		max=250;
+		break;
+	case 1:
+		max=500;
+		break;
+	case 2:
+		max=1000;
+		break;
+	case 3:
+		max=2000;
+		break;
+	}
+
+	float gyroY=(float)(data*max/32767);
+	return gyroY;
+}
+
+float MPU9250_driver::MPU_getGyroZ_f()
+{
+	int16_t data=MPU_getGyroZ();
+	GyroFullScale fs=MPU_getGyroFullScale();
+	int16_t max;
+	switch (fs)
+	{
+	case 0:
+		max=250;
+		break;
+	case 1:
+		max=500;
+		break;
+	case 2:
+		max=1000;
+		break;
+	case 3:
+		max=2000;
+		break;
+	}
+
+	float gyroZ=(float)(data*max/32767);
+	return gyroZ;
+}
+
 
 void MPU9250_driver::MPU_setAccelOffset()
 {
@@ -425,6 +500,81 @@ uint16_t MPU9250_driver::MPU_getAccelZ()
 	return ((dataH<<8)|dataL);
 }
 
+
+float MPU9250_driver::MPU_getAccelX_f()
+{
+	int16_t data=MPU_getAccelX();
+	AccelFullScale fs=MPU_getAccelFullScale();
+	int16_t max;
+	switch (fs)
+	{
+	case 0:
+		max=2;
+		break;
+	case 1:
+		max=4;
+		break;
+	case 2:
+		max=8;
+		break;
+	case 3:
+		max=16;
+		break;
+	}
+
+	float accelX=(float)(data*max/32767);
+	return accelX;
+}
+
+float MPU9250_driver::MPU_getAccelY_f()
+{
+	int16_t data=MPU_getAccelY();
+	AccelFullScale fs=MPU_getAccelFullScale();
+	int16_t max;
+	switch (fs)
+	{
+	case 0:
+		max=2;
+		break;
+	case 1:
+		max=4;
+		break;
+	case 2:
+		max=8;
+		break;
+	case 3:
+		max=16;
+		break;
+	}
+
+	float accelY=(float)(data*max/32767);
+	return accelY;
+}
+
+float MPU9250_driver::MPU_getAccelZ_f()
+{
+	int16_t data=MPU_getAccelZ();
+	AccelFullScale fs=MPU_getAccelFullScale();
+	int16_t max;
+	switch (fs)
+	{
+	case 0:
+		max=2;
+		break;
+	case 1:
+		max=4;
+		break;
+	case 2:
+		max=8;
+		break;
+	case 3:
+		max=16;
+		break;
+	}
+
+	float accelZ=(float)(data*max/32767);
+	return accelZ;
+}
 
 
 uint8_t MPU9250_driver::MPU_getSampleRateDivider()
