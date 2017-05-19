@@ -14,6 +14,8 @@
 #include <limits>
 
 
+I2C_HandleTypeDef m_i2c;
+
 /*
  * Static Helicopter instance use for SysTick timer interrupt handler
  */
@@ -46,6 +48,7 @@ Helicopter::Helicopter() :
 	m_Te(0), m_Tsim(0), m_currentTime(0),
 	m_waveformMain(NULL),
 	m_waveformTail(NULL),
+	m_mpu(&m_i2c),
 	m_isRunning(false),
 	m_isTimeToSendData(false)
 {
@@ -60,8 +63,6 @@ Helicopter::Helicopter() :
 	disableSysTickHandler();
 
 	POT2_init(&m_adc);
-
-	MPU9250_I2C_init(&m_i2c);
 
 	//SD card
 	uint32_t byteswritten;
@@ -80,6 +81,8 @@ Helicopter::Helicopter() :
 	if (f_close(&m_file) != FR_OK )
 		Error_Handler();
 	//END SD card
+
+	m_mpu.init();
 }
 
 Helicopter::~Helicopter()
@@ -447,18 +450,35 @@ void Helicopter::process()
 			f_write(&m_file, (uint8_t*)&pitchPot, sizeof(pitchPot), &byteswritten);
 		}
 		if(sensors.acceleroX)
-			f_write(&m_file, (uint8_t*)&(MPU_values.acceleroX), sizeof(MPU_values.acceleroX), &byteswritten);
+		{
+			float tmp = m_mpu.MPU_getAccelX_f() ;
+			f_write(&m_file, (uint8_t*)&(tmp), sizeof(float), &byteswritten);
+		}
 		if(sensors.acceleroY)
-			f_write(&m_file, (uint8_t*)&(MPU_values.acceleroY), sizeof(MPU_values.acceleroY), &byteswritten);
+		{
+			float tmp = m_mpu.MPU_getAccelY_f();
+			f_write(&m_file, (uint8_t*)&(tmp), sizeof(float), &byteswritten);
+		}
 		if(sensors.acceleroZ)
-			f_write(&m_file, (uint8_t*)&(MPU_values.acceleroZ), sizeof(MPU_values.acceleroZ), &byteswritten);
+		{
+			float tmp = m_mpu.MPU_getAccelZ_f();
+			f_write(&m_file, (uint8_t*)&(tmp), sizeof(float), &byteswritten);
+		}
 		if(sensors.gyroX)
-			f_write(&m_file, (uint8_t*)&(MPU_values.gyroX), sizeof(MPU_values.gyroX), &byteswritten);
+		{
+			float tmp = m_mpu.MPU_getGyroX_f();
+			f_write(&m_file, (uint8_t*)&(tmp), sizeof(float), &byteswritten);
+		}
 		if(sensors.gyroY)
-			f_write(&m_file, (uint8_t*)&(MPU_values.gyroY), sizeof(MPU_values.gyroY), &byteswritten);
+		{
+			float tmp = m_mpu.MPU_getGyroY_f();
+			f_write(&m_file, (uint8_t*)&(tmp), sizeof(float), &byteswritten);
+		}
 		if(sensors.gyroZ)
-			f_write(&m_file, (uint8_t*)&(MPU_values.gyroZ), sizeof(MPU_values.gyroZ), &byteswritten);
-
+		{
+			float tmp = m_mpu.MPU_getGyroZ_f();
+			f_write(&m_file, (uint8_t*)&(tmp), sizeof(float), &byteswritten);
+		}
 
 		m_currentTime++;
 		if(m_currentTime > m_Tsim)

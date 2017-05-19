@@ -24,6 +24,8 @@
 #include <I2C/I2c_driver.h>
 #include <I2C/I2c_init.h>
 
+#include <MPU9250/MPU9250_driver.h>
+
 struct sensors_t
 {
 	uint8_t mainMotor;
@@ -38,19 +40,7 @@ struct sensors_t
 	uint8_t gyroY;
 	uint8_t gyroZ;
 
-
 	uint8_t nbSensors;
-};
-
-struct MPU_values_t
-{
-	uint16_t acceleroX;
-	uint16_t acceleroY;
-	uint16_t acceleroZ;
-
-	uint16_t gyroX;
-	uint16_t gyroY;
-	uint16_t gyroZ;
 };
 
 class Helicopter
@@ -104,7 +94,7 @@ private:
 	//AnalogOut m_dac1;
 	//AnalogOut m_dac2;
 
-	I2C_HandleTypeDef m_i2c;
+	//I2C_HandleTypeDef m_i2c;
 	DRV_UART_TypeDef m_remotePc;
 	ADC_HandleTypeDef m_adc;
 
@@ -119,6 +109,7 @@ private:
 	Waveform* m_waveformMain;
 	Waveform* m_waveformTail;
 
+	MPU9250_driver m_mpu;
 	sensors_t sensors;
 	MPU_values_t MPU_values;
 
