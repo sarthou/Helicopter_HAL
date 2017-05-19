@@ -14,6 +14,9 @@
 #include <Uart/Uart_driver.h>
 #include <Uart/Uart_init.h>
 #include <Helicopter/Helicopter.h>
+
+#include <I2C/I2c_driver.h>
+#include <I2C/I2c_init.h>
 			
 static void SystemClock_Config(void)
 {
@@ -38,7 +41,7 @@ static void SystemClock_Config(void)
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2)!= HAL_OK)
 	  Error_Handler();
 }
-
+//I2C_HandleTypeDef i2c;
 int main(void)
 {
 	SystemClock_Config();
@@ -47,35 +50,13 @@ int main(void)
 	Helicopter helico;
 	helico.run();
 
+
+	/*MPU9250_I2C_init(&i2c);
+
+	while(1)
+	{
+		DRV_I2C_read_byte(&i2c, 0x75);
+	}*/
+
 	for(;;);
 }
-
-/*int main(void)
-{
-	SystemClock_Config();
-
-	DRV_PWM_TypeDef pwm1, pwm2;
-	DRV_UART_TypeDef uart;
-
-	DRV_UART_init(&uart, USART2);
-	int baud = 9600;
-	DRV_UART_baud(&uart, 9600);
-	DRV_UART_printf(&uart, "\r\n\r\ntest ctor\r\nbaud = %d\r\n", baud);
-
-	MainMotorPWM_init(&pwm1);
-	DRV_PWM_setDutyCycle(&pwm1, 0.7);
-
-	TailMotorPWM_init(&pwm2);
-	DRV_PWM_setDutyCycle(&pwm2, 0.1);*/
-
-	/*for(;;)
-	{
-		if(DRV_UART_readable(&uart))
-		{
-			int c1 = DRV_UART_getc(&uart);
-			int c2 = DRV_UART_getc(&uart);
-			int c3 = c1+c2;
-			DRV_UART_putc(&uart, c3/2);
-		}
-	}
-}*/
