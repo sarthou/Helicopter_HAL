@@ -84,5 +84,14 @@ uint16_t DRV_I2C_read_word(I2C_HandleTypeDef* I2cHandle, uint8_t regAddr)
 	aTxBuffer[0] = regAddr;
 	DRV_I2C_write(I2cHandle, aTxBuffer, 1);
 	DRV_I2C_read(I2cHandle, aTxBuffer, 2);
-	return aTxBuffer[0] & (aTxBuffer[1] << 8);
+	return aTxBuffer[0] | (aTxBuffer[1] << 8);
+}
+
+uint16_t DRV_I2C_read_word_swap(I2C_HandleTypeDef* I2cHandle, uint8_t regAddr)
+{
+	uint8_t aTxBuffer[2];
+	aTxBuffer[0] = regAddr;
+	DRV_I2C_write(I2cHandle, aTxBuffer, 1);
+	DRV_I2C_read(I2cHandle, aTxBuffer, 2);
+	return aTxBuffer[1] | (aTxBuffer[0] << 8);
 }

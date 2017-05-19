@@ -15,6 +15,7 @@ void DRV_I2C_write_byte(I2C_HandleTypeDef* I2cHandle, uint8_t regAddr, uint8_t d
 void DRV_I2C_write_word(I2C_HandleTypeDef* I2cHandle, uint8_t regAddr, uint16_t data);
 uint8_t DRV_I2C_read_byte(I2C_HandleTypeDef* I2cHandle, uint8_t regAddr);
 uint16_t DRV_I2C_read_word(I2C_HandleTypeDef* I2cHandle, uint8_t regAddr);
+uint16_t DRV_I2C_read_word_swap(I2C_HandleTypeDef* I2cHandle, uint8_t regAddr);
 
 #ifdef __cplusplus
 }
