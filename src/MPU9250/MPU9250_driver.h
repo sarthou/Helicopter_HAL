@@ -11,6 +11,17 @@
 #include "I2C\I2c_driver.h"
 #include "I2C\I2c_init.h"
 
+struct MPU_values_t
+{
+	uint16_t acceleroX;
+	uint16_t acceleroY;
+	uint16_t acceleroZ;
+
+	uint16_t gyroX;
+	uint16_t gyroY;
+	uint16_t gyroZ;
+};
+
 
 enum GyroBandwith {
 	bw_8800=8,
@@ -57,6 +68,7 @@ class MPU9250_driver
 {
 public:
 	MPU9250_driver(I2C_HandleTypeDef* i2c);
+	void init();
 
 	// WHO AM I
 	uint8_t MPU_getWhoAmI();
@@ -156,10 +168,13 @@ public:
 
 private:
     I2C_HandleTypeDef* m_i2c;
+    GyroFullScale m_gyroFs;
+    AccelFullScale m_acceFs;
 
-    uint8_t readRegister(I2C_HandleTypeDef* i2c, uint8_t reg_addr);
+    uint8_t readRegister(uint8_t reg_addr);
+    uint16_t readWordRegister(uint8_t reg_addr);
 
-    void writeRegister(I2C_HandleTypeDef* i2c,uint8_t reg_addr, uint8_t data);
+    void writeRegister(uint8_t reg_addr, uint8_t data);
 
 };
 

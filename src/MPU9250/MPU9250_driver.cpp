@@ -223,43 +223,49 @@ pour désactiver X, Y ou Z de l'accelero ou du gyro*/
 
 
 //Constructeur
-MPU9250_driver::MPU9250_driver(I2C_HandleTypeDef* i2c)
+MPU9250_driver::MPU9250_driver(I2C_HandleTypeDef* i2c) : m_gyroFs(fs_250), m_acceFs(fs_2)
 {
 	m_i2c=i2c;
 	MPU9250_I2C_init(m_i2c);
 }
 
+void MPU9250_driver::init()
+{
+	m_gyroFs = MPU_getGyroFullScale();
+	m_acceFs = MPU_getAccelFullScale();
+}
+
 uint8_t MPU9250_driver::MPU_getWhoAmI()
 {
-	return readRegister(m_i2c,WHO_AM_I);
+	return readRegister(WHO_AM_I);
 }
 
 
 void MPU9250_driver::MPU_disableAxis(Axis ax)
 {
-	writeRegister(m_i2c,PWR_MGMT_2,readRegister(m_i2c,PWR_MGMT_2)|(1<<ax));
+	writeRegister(PWR_MGMT_2,readRegister(PWR_MGMT_2)|(1<<ax));
 }
 
 
 void MPU9250_driver::MPU_setGyroOffset()
 {
 	//offset X_h
-    writeRegister(m_i2c,XG_OFFSET_H,readRegister(m_i2c,GYRO_XOUT_H));
+    writeRegister(XG_OFFSET_H,readRegister(GYRO_XOUT_H));
     //offset X_l
-    writeRegister(m_i2c,XG_OFFSET_L,readRegister(m_i2c,GYRO_XOUT_L));
+    writeRegister(XG_OFFSET_L,readRegister(GYRO_XOUT_L));
     //offset Y_h
-    writeRegister(m_i2c,YG_OFFSET_H,readRegister(m_i2c,GYRO_YOUT_H));
+    writeRegister(YG_OFFSET_H,readRegister(GYRO_YOUT_H));
     //offset Y_l
-    writeRegister(m_i2c,YG_OFFSET_L,readRegister(m_i2c,GYRO_YOUT_L));
+    writeRegister(YG_OFFSET_L,readRegister(GYRO_YOUT_L));
     //offset Z_h
-    writeRegister(m_i2c,ZG_OFFSET_H,readRegister(m_i2c,GYRO_ZOUT_H));
+    writeRegister(ZG_OFFSET_H,readRegister(GYRO_ZOUT_H));
     //offset Z_l
-    writeRegister(m_i2c,ZG_OFFSET_L,readRegister(m_i2c,GYRO_ZOUT_L));
+    writeRegister(ZG_OFFSET_L,readRegister(GYRO_ZOUT_L));
 }
 
 GyroFullScale MPU9250_driver::MPU_getGyroFullScale()
 {
-	uint8_t data=(readRegister(m_i2c,GYRO_CONFIG)&0x18);
+	uint8_t data=(readRegister(GYRO_CONFIG)&0x18);
 	GyroFullScale fs;
 	switch (data)
 	{
@@ -281,13 +287,14 @@ GyroFullScale MPU9250_driver::MPU_getGyroFullScale()
 
 void MPU9250_driver::MPU_setGyroFullScale(GyroFullScale fs)
 {
-	writeRegister(m_i2c,GYRO_CONFIG,(readRegister(m_i2c,GYRO_CONFIG)&~(0x18))|(fs<<3));
+	writeRegister(GYRO_CONFIG,(readRegister(GYRO_CONFIG)&~(0x18))|(fs<<3));
+	m_gyroFs = fs;
 }
 
 GyroBandwith MPU9250_driver::MPU_getGyroBandwith()
 {
-	uint8_t fChoice_b=(readRegister(m_i2c,GYRO_CONFIG)&0x3);
-	uint8_t dlpf=(readRegister(m_i2c,CONFIG)&0x7);
+	uint8_t fChoice_b=(readRegister(GYRO_CONFIG)&0x3);
+	uint8_t dlpf=(readRegister(CONFIG)&0x7);
 	GyroBandwith res;
 	if (fChoice_b==2)
 	{
@@ -310,47 +317,43 @@ void MPU9250_driver::MPU_setGyroBandwith(GyroBandwith bw, bool dlpf_on)
 	{
 		if (bw==8800)
 		{
-			writeRegister(m_i2c,GYRO_CONFIG,readRegister(m_i2c,GYRO_CONFIG)|(0x1));
+			writeRegister(GYRO_CONFIG,readRegister(GYRO_CONFIG)|(0x1));
 		}
 		else
 		{
-			writeRegister(m_i2c,GYRO_CONFIG,(readRegister(m_i2c,GYRO_CONFIG)&~(0x3))|(0x2));
+			writeRegister(GYRO_CONFIG,(readRegister(GYRO_CONFIG)&~(0x3))|(0x2));
 		}
 	}
 	else
 	{
-		writeRegister(m_i2c,CONFIG,(readRegister(m_i2c,CONFIG)&~(0x3))|bw);
+		writeRegister(CONFIG,(readRegister(CONFIG)&~(0x3))|bw);
 	}
 }
 
 uint16_t MPU9250_driver::MPU_getGyroX()
 {
-	uint16_t dataL=readRegister(m_i2c,GYRO_XOUT_L);
-	uint16_t dataH=readRegister(m_i2c,GYRO_XOUT_H);
-	return ((dataH<<8)|dataL);
+	uint16_t data = readWordRegister(GYRO_XOUT_H);
+	return data;
 }
 
 uint16_t MPU9250_driver::MPU_getGyroY()
 {
-	uint16_t dataL=readRegister(m_i2c,GYRO_YOUT_L);
-	uint16_t dataH=readRegister(m_i2c,GYRO_YOUT_H);
-	return ((dataH<<8)|dataL);
+	uint16_t data = readWordRegister(GYRO_YOUT_H);
+	return data;
 }
 
 uint16_t MPU9250_driver::MPU_getGyroZ()
 {
-	uint16_t dataL=readRegister(m_i2c,GYRO_ZOUT_L);
-	uint16_t dataH=readRegister(m_i2c,GYRO_ZOUT_H);
-	return ((dataH<<8)|dataL);
+	uint16_t data = readWordRegister(GYRO_ZOUT_H);
+	return data;
 }
 
 
 float MPU9250_driver::MPU_getGyroX_f()
 {
 	int16_t data=MPU_getGyroX();
-	GyroFullScale fs=MPU_getGyroFullScale();
 	int16_t max;
-	switch (fs)
+	switch (m_gyroFs)
 	{
 	case 0:
 		max=250;
@@ -366,16 +369,15 @@ float MPU9250_driver::MPU_getGyroX_f()
 		break;
 	}
 
-	float gyroX=(float)(data*max/32767);
+	float gyroX=(float)(data*max/32767.);
 	return gyroX;
 }
 
 float MPU9250_driver::MPU_getGyroY_f()
 {
 	int16_t data=MPU_getGyroY();
-	GyroFullScale fs=MPU_getGyroFullScale();
 	int16_t max;
-	switch (fs)
+	switch (m_gyroFs)
 	{
 	case 0:
 		max=250;
@@ -391,16 +393,15 @@ float MPU9250_driver::MPU_getGyroY_f()
 		break;
 	}
 
-	float gyroY=(float)(data*max/32767);
+	float gyroY=(float)(data*max/32767.);
 	return gyroY;
 }
 
 float MPU9250_driver::MPU_getGyroZ_f()
 {
 	int16_t data=MPU_getGyroZ();
-	GyroFullScale fs=MPU_getGyroFullScale();
 	int16_t max;
-	switch (fs)
+	switch (m_gyroFs)
 	{
 	case 0:
 		max=250;
@@ -416,7 +417,7 @@ float MPU9250_driver::MPU_getGyroZ_f()
 		break;
 	}
 
-	float gyroZ=(float)(data*max/32767);
+	float gyroZ=(float)(data*max/32767.);
 	return gyroZ;
 }
 
@@ -425,33 +426,34 @@ void MPU9250_driver::MPU_setAccelOffset()
 {
 	uint16_t data;
     //X
-    data=(readRegister(m_i2c,ACCEL_XOUT_H)<<8)|(readRegister(m_i2c,ACCEL_XOUT_L));
-    writeRegister(m_i2c,XA_OFFSET_H,data>>7);
-    writeRegister(m_i2c,XA_OFFSET_L,(readRegister(m_i2c,XA_OFFSET_L)&~(0x1))|(data<<1));
+    data=(readRegister(ACCEL_XOUT_H)<<8)|(readRegister(ACCEL_XOUT_L));
+    writeRegister(XA_OFFSET_H,data>>7);
+    writeRegister(XA_OFFSET_L,(readRegister(XA_OFFSET_L)&~(0x1))|(data<<1));
     //Y
-    data=(readRegister(m_i2c,ACCEL_YOUT_H)<<8)|(readRegister(m_i2c,ACCEL_YOUT_L));
-    writeRegister(m_i2c,YA_OFFSET_H,data>>7);
-    writeRegister(m_i2c,YA_OFFSET_L,(readRegister(m_i2c,YA_OFFSET_L)&~(0x1))|(data<<1));
+    data=(readRegister(ACCEL_YOUT_H)<<8)|(readRegister(ACCEL_YOUT_L));
+    writeRegister(YA_OFFSET_H,data>>7);
+    writeRegister(YA_OFFSET_L,(readRegister(YA_OFFSET_L)&~(0x1))|(data<<1));
     //Z
-    data=(readRegister(m_i2c,ACCEL_ZOUT_H)<<8)|(readRegister(m_i2c,ACCEL_ZOUT_L));
-    writeRegister(m_i2c,ZA_OFFSET_H,data>>7);
-    writeRegister(m_i2c,ZA_OFFSET_L,(readRegister(m_i2c,ZA_OFFSET_L)&~(0x1))|(data<<1));
+    data=(readRegister(ACCEL_ZOUT_H)<<8)|(readRegister(ACCEL_ZOUT_L));
+    writeRegister(ZA_OFFSET_H,data>>7);
+    writeRegister(ZA_OFFSET_L,(readRegister(ZA_OFFSET_L)&~(0x1))|(data<<1));
 }
 
 AccelFullScale MPU9250_driver::MPU_getAccelFullScale()
 {
-	return (AccelFullScale)(readRegister(m_i2c,ACCEL_CONFIG)&0x18);
+	return (AccelFullScale)(readRegister(ACCEL_CONFIG)&0x18);
 }
 
 void MPU9250_driver::MPU_setAccelFullScale(AccelFullScale fs)
 {
-	writeRegister(m_i2c,ACCEL_CONFIG,(readRegister(m_i2c,ACCEL_CONFIG)&~(0x18))|(fs<<3));
+	writeRegister(ACCEL_CONFIG,(readRegister(ACCEL_CONFIG)&~(0x18))|(fs<<3));
+	m_acceFs = fs;
 }
 
 AccelBandwith MPU9250_driver::MPU_getAccelBandwith()
 {
-	uint8_t fChoice_b = (readRegister(m_i2c,ACCEL_CONFIG2)&0x8);
-	uint16_t dlpf = (readRegister(m_i2c,ACCEL_CONFIG2)&0x7);
+	uint8_t fChoice_b = (readRegister(ACCEL_CONFIG2)&0x8);
+	uint16_t dlpf = (readRegister(ACCEL_CONFIG2)&0x7);
 	AccelBandwith res;
 	if (fChoice_b==1)
 	{
@@ -469,44 +471,40 @@ void MPU9250_driver::MPU_setAccelBandwith(AccelBandwith bw, bool dlpf_on)
 	if ((dlpf_on==false)||(bw==8))
 	{
 		//f_choice_b=1
-		writeRegister(m_i2c,ACCEL_CONFIG2,readRegister(m_i2c,ACCEL_CONFIG2)|(1<<3));
+		writeRegister(ACCEL_CONFIG2,readRegister(ACCEL_CONFIG2)|(1<<3));
 	}
 	else
 	{
 		//f_choice_b=0
-		writeRegister(m_i2c,ACCEL_CONFIG2,readRegister(m_i2c,ACCEL_CONFIG2)&~(1<<3));
-		writeRegister(m_i2c,ACCEL_CONFIG2,(readRegister(m_i2c,ACCEL_CONFIG2)&~(0x7))|bw);
+		writeRegister(ACCEL_CONFIG2,readRegister(ACCEL_CONFIG2)&~(1<<3));
+		writeRegister(ACCEL_CONFIG2,(readRegister(ACCEL_CONFIG2)&~(0x7))|bw);
 	}
 }
 
 uint16_t MPU9250_driver::MPU_getAccelX()
 {
-	uint16_t dataL=readRegister(m_i2c,ACCEL_XOUT_L);
-	uint16_t dataH=readRegister(m_i2c,ACCEL_XOUT_H);
-	return ((dataH<<8)|dataL);
+	uint16_t data = readWordRegister(ACCEL_XOUT_H);
+	return data;
 }
 
 uint16_t MPU9250_driver::MPU_getAccelY()
 {
-	uint16_t dataL=readRegister(m_i2c,ACCEL_YOUT_L);
-	uint16_t dataH=readRegister(m_i2c,ACCEL_YOUT_H);
-	return ((dataH<<8)|dataL);
+	uint16_t data = readWordRegister(ACCEL_YOUT_H);
+	return data;
 }
 
 uint16_t MPU9250_driver::MPU_getAccelZ()
 {
-	uint16_t dataL=readRegister(m_i2c,ACCEL_ZOUT_L);
-	uint16_t dataH=readRegister(m_i2c,ACCEL_ZOUT_H);
-	return ((dataH<<8)|dataL);
+	uint16_t data = readWordRegister(ACCEL_ZOUT_H);
+	return data;
 }
 
 
 float MPU9250_driver::MPU_getAccelX_f()
 {
 	int16_t data=MPU_getAccelX();
-	AccelFullScale fs=MPU_getAccelFullScale();
 	int16_t max;
-	switch (fs)
+	switch (m_acceFs)
 	{
 	case 0:
 		max=2;
@@ -522,16 +520,15 @@ float MPU9250_driver::MPU_getAccelX_f()
 		break;
 	}
 
-	float accelX=(float)(data*max/32767);
+	float accelX=(float)(data*max/32767.);
 	return accelX;
 }
 
 float MPU9250_driver::MPU_getAccelY_f()
 {
 	int16_t data=MPU_getAccelY();
-	AccelFullScale fs=MPU_getAccelFullScale();
 	int16_t max;
-	switch (fs)
+	switch (m_acceFs)
 	{
 	case 0:
 		max=2;
@@ -547,16 +544,15 @@ float MPU9250_driver::MPU_getAccelY_f()
 		break;
 	}
 
-	float accelY=(float)(data*max/32767);
+	float accelY=(float)(data*max/32767.);
 	return accelY;
 }
 
 float MPU9250_driver::MPU_getAccelZ_f()
 {
 	int16_t data=MPU_getAccelZ();
-	AccelFullScale fs=MPU_getAccelFullScale();
 	int16_t max;
-	switch (fs)
+	switch (m_acceFs)
 	{
 	case 0:
 		max=2;
@@ -572,186 +568,188 @@ float MPU9250_driver::MPU_getAccelZ_f()
 		break;
 	}
 
-	float accelZ=(float)(data*max/32767);
+	float accelZ=(float)(data*max/32767.);
 	return accelZ;
 }
 
 
 uint8_t MPU9250_driver::MPU_getSampleRateDivider()
 {
-	return readRegister(m_i2c,SMPLRT_DIV);
+	return readRegister(SMPLRT_DIV);
 }
 
 void MPU9250_driver::MPU_setSampleRateDivider (uint8_t div)
 {
-	writeRegister(m_i2c,SMPLRT_DIV,div);
+	writeRegister(SMPLRT_DIV,div);
 }
 
 void MPU9250_driver::MPU_setFifoMode(uint8_t fifo_mode)
 {
 	//fifo_mode = 0 or 1
-	writeRegister(m_i2c,CONFIG,(readRegister(m_i2c,CONFIG)&~(0x40))|(fifo_mode<<6));
+	writeRegister(CONFIG,(readRegister(CONFIG)&~(0x40))|(fifo_mode<<6));
 }
 
 void MPU9250_driver::MPU_setFsyncSampled(uint8_t ext_sync_set)
 {
-	writeRegister(m_i2c,CONFIG,(readRegister(m_i2c,CONFIG)&~(0x38))|(ext_sync_set<<3));
+	writeRegister(CONFIG,(readRegister(CONFIG)&~(0x38))|(ext_sync_set<<3));
 }
 
 
 uint8_t MPU9250_driver::MPU_getINTactl()
 {
-	return (readRegister(m_i2c,INT_PIN_CFG)&0x80);
+	return (readRegister(INT_PIN_CFG)&0x80);
 }
 
 void MPU9250_driver::MPU_setINTactl(uint8_t actl)
 {
 	//actl=1 => active low
-	writeRegister(m_i2c,INT_PIN_CFG,(readRegister(m_i2c,INT_PIN_CFG)&~(0x80))|(actl<<7));
+	writeRegister(INT_PIN_CFG,(readRegister(INT_PIN_CFG)&~(0x80))|(actl<<7));
 }
 
 uint8_t MPU9250_driver::MPU_getINTopendrain()
 {
-	return (readRegister(m_i2c,INT_PIN_CFG)&0x40);
+	return (readRegister(INT_PIN_CFG)&0x40);
 }
 
 void MPU9250_driver::MPU_setINTopendrain(uint8_t opendrain)
 {
-	writeRegister(m_i2c,INT_PIN_CFG,(readRegister(m_i2c,INT_PIN_CFG)&~(0x40))|(opendrain<<6));
+	writeRegister(INT_PIN_CFG,(readRegister(INT_PIN_CFG)&~(0x40))|(opendrain<<6));
 }
 
 uint8_t MPU9250_driver::MPU_getINTlatchIntEn()
 {
-	return (readRegister(m_i2c,INT_PIN_CFG)&0x20);
+	return (readRegister(INT_PIN_CFG)&0x20);
 }
 
 void MPU9250_driver::MPU_setINTlatchIntEn(uint8_t levelHeld)
 {
-	writeRegister(m_i2c,INT_PIN_CFG,(readRegister(m_i2c,INT_PIN_CFG)&~(0x20))|(levelHeld<<5));
+	writeRegister(INT_PIN_CFG,(readRegister(INT_PIN_CFG)&~(0x20))|(levelHeld<<5));
 }
 
 uint8_t MPU9250_driver::MPU_getINTanyrd()
 {
-	return (readRegister(m_i2c,INT_PIN_CFG)&0x10);
+	return (readRegister(INT_PIN_CFG)&0x10);
 }
 
 void MPU9250_driver::MPU_setINTanyrd(uint8_t anyread)
 {
-	writeRegister(m_i2c,INT_PIN_CFG,(readRegister(m_i2c,INT_PIN_CFG)&~(0x10))|(anyread<<4));
+	writeRegister(INT_PIN_CFG,(readRegister(INT_PIN_CFG)&~(0x10))|(anyread<<4));
 }
 
 uint8_t MPU9250_driver::MPU_getITRawRdyEn()
 {
-	return (readRegister(m_i2c,INT_ENABLE)&0x1);
+	return (readRegister(INT_ENABLE)&0x1);
 }
 
 void MPU9250_driver::MPU_setITRawRdyEn(uint8_t enable)
 {
-	writeRegister(m_i2c,INT_ENABLE,(readRegister(m_i2c,INT_ENABLE)&~(0x1))|enable);
+	writeRegister(INT_ENABLE,(readRegister(INT_ENABLE)&~(0x1))|enable);
 }
 
 uint8_t MPU9250_driver::MPU_getITStatusRawDataRdy()
 {
-	return (readRegister(m_i2c,INT_STATUS)&0x1);
+	return (readRegister(INT_STATUS)&0x1);
 }
 
 
 uint8_t MPU9250_driver::MPU_getWaitForEs()
 {
-	return (readRegister(m_i2c,I2C_MST_CTRL)&0x40);
+	return (readRegister(I2C_MST_CTRL)&0x40);
 }
 
 void MPU9250_driver::MPU_setWaitForEs(uint8_t delay)
 {
-	writeRegister(m_i2c,I2C_MST_CTRL,(readRegister(m_i2c,I2C_MST_CTRL)&~(0x40))|(delay<<6));
+	writeRegister(I2C_MST_CTRL,(readRegister(I2C_MST_CTRL)&~(0x40))|(delay<<6));
 }
 
 uint8_t MPU9250_driver::MPU_getSignalPathGyroReset()
 {
-	return (readRegister(m_i2c,SIGNAL_PATH_RESET)&0x4);
+	return (readRegister(SIGNAL_PATH_RESET)&0x4);
 }
 
 void MPU9250_driver::MPU_setSignalPathGyroReset(uint8_t reset)
 {
-	writeRegister(m_i2c,SIGNAL_PATH_RESET,(readRegister(m_i2c,SIGNAL_PATH_RESET)&~(0x4))|(reset<<2));
+	writeRegister(SIGNAL_PATH_RESET,(readRegister(SIGNAL_PATH_RESET)&~(0x4))|(reset<<2));
 }
 
 uint8_t MPU9250_driver::MPU_getSignalPathAcceleroReset()
 {
-	return (readRegister(m_i2c,SIGNAL_PATH_RESET)&0x2);
+	return (readRegister(SIGNAL_PATH_RESET)&0x2);
 }
 
 void MPU9250_driver::MPU_setSignalPathAcceleroReset(uint8_t reset)
 {
-	writeRegister(m_i2c,SIGNAL_PATH_RESET,(readRegister(m_i2c,SIGNAL_PATH_RESET)&~(0x2))|(reset<<1));
+	writeRegister(SIGNAL_PATH_RESET,(readRegister(SIGNAL_PATH_RESET)&~(0x2))|(reset<<1));
 }
 
 void MPU9250_driver::MPU_setUSRCTRLsigCondRst(uint8_t reset)
 {
-	writeRegister(m_i2c,USER_CTRL,(readRegister(m_i2c,USER_CTRL)&~(0x1))|reset);
+	writeRegister(USER_CTRL,(readRegister(USER_CTRL)&~(0x1))|reset);
 }
 
 
 uint8_t MPU9250_driver::MPU_getUSRCTRLsigCondRst()
 {
-	return (readRegister(m_i2c,USER_CTRL)&0x1);
+	return (readRegister(USER_CTRL)&0x1);
 }
 
 void MPU9250_driver::MPU_ResetDefault()
 {
-	writeRegister(m_i2c,PWR_MGMT_1,readRegister(m_i2c,PWR_MGMT_1)|0x80);
+	writeRegister(PWR_MGMT_1,readRegister(PWR_MGMT_1)|0x80);
 }
 
 uint8_t MPU9250_driver::MPU_getSleepMode()
 {
-	return (readRegister(m_i2c,PWR_MGMT_1)&0x40);
+	return (readRegister(PWR_MGMT_1)&0x40);
 }
 
 void MPU9250_driver::MPU_setSleepMode(uint8_t sleep)
 {
-	writeRegister(m_i2c,PWR_MGMT_1,(readRegister(m_i2c,PWR_MGMT_1)&~(0x40))|(sleep<<6));
+	writeRegister(PWR_MGMT_1,(readRegister(PWR_MGMT_1)&~(0x40))|(sleep<<6));
 }
 
 uint8_t MPU9250_driver::MPU_getCycleMode()
 {
-	return (readRegister(m_i2c,PWR_MGMT_1)&0x20);
+	return (readRegister(PWR_MGMT_1)&0x20);
 }
 
 void MPU9250_driver::MPU_setCycleMode(uint8_t cycle)
 {
-	writeRegister(m_i2c,PWR_MGMT_1,(readRegister(m_i2c,PWR_MGMT_1)&~(0x20))|(cycle<<5));
+	writeRegister(PWR_MGMT_1,(readRegister(PWR_MGMT_1)&~(0x20))|(cycle<<5));
 }
 
 uint8_t MPU9250_driver::MPU_getGyroStandby()
 {
-	return (readRegister(m_i2c,PWR_MGMT_1)&0x10);
+	return (readRegister(PWR_MGMT_1)&0x10);
 }
 
 void MPU9250_driver::MPU_setGyroStandby(uint8_t standby)
 {
-	writeRegister(m_i2c,PWR_MGMT_1,(readRegister(m_i2c,PWR_MGMT_1)&~(0x10))|(standby<<4));
+	writeRegister(PWR_MGMT_1,(readRegister(PWR_MGMT_1)&~(0x10))|(standby<<4));
 }
 
 uint8_t MPU9250_driver::MPU_getClkSel()
 {
-	return (readRegister(m_i2c,PWR_MGMT_1)&0x7);
+	return (readRegister(PWR_MGMT_1)&0x7);
 }
 
 void MPU9250_driver::MPU_setClkSel(uint8_t code)
 {
-	writeRegister(m_i2c,PWR_MGMT_1,(readRegister(m_i2c,PWR_MGMT_1)&~(0x7))|code);
+	writeRegister(PWR_MGMT_1,(readRegister(PWR_MGMT_1)&~(0x7))|code);
 }
 
-
-
-
-
-uint8_t MPU9250_driver::readRegister(I2C_HandleTypeDef* i2c, uint8_t reg_addr)
-    {
-    	return DRV_I2C_read_byte(i2c, reg_addr);
-    }
-// fonction write register (taille=nb_octets)
-void MPU9250_driver::writeRegister(I2C_HandleTypeDef* i2c,uint8_t reg_addr, uint8_t data)
+uint8_t MPU9250_driver::readRegister(uint8_t reg_addr)
 {
-	DRV_I2C_write_byte(i2c,reg_addr,data);
+	return DRV_I2C_read_byte(m_i2c, reg_addr);
+}
+
+uint16_t MPU9250_driver::readWordRegister(uint8_t reg_addr)
+{
+	return DRV_I2C_read_word_swap(m_i2c, reg_addr);
+}
+
+// fonction write register (taille=nb_octets)
+void MPU9250_driver::writeRegister(uint8_t reg_addr, uint8_t data)
+{
+	DRV_I2C_write_byte(m_i2c,reg_addr,data);
 }
