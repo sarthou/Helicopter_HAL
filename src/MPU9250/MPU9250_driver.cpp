@@ -249,18 +249,27 @@ void MPU9250_driver::MPU_disableAxis(Axis ax)
 
 void MPU9250_driver::MPU_setGyroOffset()
 {
+	uint8_t tmp = 0;
+
+	tmp = readRegister(GYRO_YOUT_H);
+	tmp = readRegister(GYRO_YOUT_L);
+	tmp = readRegister(GYRO_ZOUT_H);
+	tmp = readRegister(GYRO_ZOUT_L);
+
 	//offset X_h
-    writeRegister(XG_OFFSET_H,readRegister(GYRO_XOUT_H));
+	tmp = readRegister(GYRO_XOUT_H);
+	writeRegister(XG_OFFSET_H, tmp);
     //offset X_l
-    writeRegister(XG_OFFSET_L,readRegister(GYRO_XOUT_L));
+	tmp = readRegister(GYRO_XOUT_L);
+	writeRegister(XG_OFFSET_L, tmp);
     //offset Y_h
-    writeRegister(YG_OFFSET_H,readRegister(GYRO_YOUT_H));
+    /*writeRegister(YG_OFFSET_H, tmp)*/;
     //offset Y_l
-    writeRegister(YG_OFFSET_L,readRegister(GYRO_YOUT_L));
+    /*writeRegister(YG_OFFSET_L, tmp)*/;
     //offset Z_h
-    writeRegister(ZG_OFFSET_H,readRegister(GYRO_ZOUT_H));
+    /*writeRegister(ZG_OFFSET_H, tmp)*/;
     //offset Z_l
-    writeRegister(ZG_OFFSET_L,readRegister(GYRO_ZOUT_L));
+    /*writeRegister(ZG_OFFSET_L, tmp)*/;
 }
 
 GyroFullScale MPU9250_driver::MPU_getGyroFullScale()
@@ -330,22 +339,31 @@ void MPU9250_driver::MPU_setGyroBandwith(GyroBandwith bw, bool dlpf_on)
 	}
 }
 
+void MPU9250_driver::readGyro()
+{
+	uint8_t Buffer[6];
+	Buffer[0] = GYRO_XOUT_H;
+	DRV_I2C_write(m_i2c, Buffer, 1);
+	DRV_I2C_read(m_i2c, Buffer, 6);
+
+	m_values.gyroX = Buffer[1] | (Buffer[0] << 8);
+	m_values.gyroY = Buffer[3] | (Buffer[2] << 8);
+	m_values.gyroZ = Buffer[5] | (Buffer[4] << 8);
+}
+
 uint16_t MPU9250_driver::MPU_getGyroX()
 {
-	uint16_t data = readWordRegister(GYRO_XOUT_H);
-	return data;
+	return m_values.gyroX;
 }
 
 uint16_t MPU9250_driver::MPU_getGyroY()
 {
-	uint16_t data = readWordRegister(GYRO_YOUT_H);
-	return data;
+	return m_values.gyroY;
 }
 
 uint16_t MPU9250_driver::MPU_getGyroZ()
 {
-	uint16_t data = readWordRegister(GYRO_ZOUT_H);
-	return data;
+	return m_values.gyroZ;
 }
 
 
@@ -481,22 +499,31 @@ void MPU9250_driver::MPU_setAccelBandwith(AccelBandwith bw, bool dlpf_on)
 	}
 }
 
+void MPU9250_driver::readAccel()
+{
+	uint8_t Buffer[6];
+	Buffer[0] = ACCEL_XOUT_H;
+	DRV_I2C_write(m_i2c, Buffer, 1);
+	DRV_I2C_read(m_i2c, Buffer, 6);
+
+	m_values.acceleroX = Buffer[1] | (Buffer[0] << 8);
+	m_values.acceleroY = Buffer[3] | (Buffer[2] << 8);
+	m_values.acceleroZ = Buffer[5] | (Buffer[4] << 8);
+}
+
 uint16_t MPU9250_driver::MPU_getAccelX()
 {
-	uint16_t data = readWordRegister(ACCEL_XOUT_H);
-	return data;
+	return m_values.acceleroX;
 }
 
 uint16_t MPU9250_driver::MPU_getAccelY()
 {
-	uint16_t data = readWordRegister(ACCEL_YOUT_H);
-	return data;
+	return m_values.acceleroY;
 }
 
 uint16_t MPU9250_driver::MPU_getAccelZ()
 {
-	uint16_t data = readWordRegister(ACCEL_ZOUT_H);
-	return data;
+	return m_values.acceleroZ;
 }
 
 

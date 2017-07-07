@@ -86,6 +86,7 @@ public:
 
 	void MPU_setGyroBandwith(GyroBandwith bw, bool dlpf_on);
 
+	void readGyro();
 	uint16_t MPU_getGyroX();
 	uint16_t MPU_getGyroY();
 	uint16_t MPU_getGyroZ();
@@ -106,6 +107,7 @@ public:
 
 	void MPU_setAccelBandwith(AccelBandwith bw, bool dlpf_on);
 
+	void readAccel();
 	uint16_t MPU_getAccelX();
 	uint16_t MPU_getAccelY();
 	uint16_t MPU_getAccelZ();
@@ -175,6 +177,8 @@ private:
     uint16_t readWordRegister(uint8_t reg_addr);
 
     void writeRegister(uint8_t reg_addr, uint8_t data);
+
+    MPU_values_t m_values;
 
 };
 

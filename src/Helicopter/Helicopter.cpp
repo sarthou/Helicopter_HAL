@@ -55,6 +55,9 @@ Helicopter::Helicopter() :
 	MainMotorPWM_init(&m_motorMain);
 	TailMotorPWM_init(&m_motorTail);
 
+	motorMainSetSpeed(0);
+	motorTailSetSpeed(0);
+
 	//MPU9250_I2C_init(&m_i2c);
 	BLE_UART_init(&m_remotePc);
 
@@ -283,6 +286,8 @@ void Helicopter::handleInitializationFrame()
 
 	DRV_UART_read(&m_remotePc, buffer, 4);
 	m_Tsim = HCP_toUint32(buffer);
+
+	//m_mpu.MPU_setGyroOffset();
 }
 
 void Helicopter::handleSignalRotorMainFrame()
@@ -438,6 +443,9 @@ void Helicopter::process()
 
 		float commandRotorTail = m_waveformTail->generate(m_currentTime)/100000000.f;
 		motorTailSetSpeed(commandRotorTail);
+
+		m_mpu.readGyro();
+		m_mpu.readAccel();
 
 		uint32_t byteswritten = 0;
 		if(sensors.mainMotor)
